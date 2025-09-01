@@ -49,14 +49,15 @@
             </div>
 
             <!-- Add Project -->
-            <div
+            <a href="/addProjectMhs"
                 class="bg-white rounded-xl shadow hover:shadow-lg flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-transform duration-200 hover:scale-[1.02] aspect-square">
                 <div class="text-center">
                     <span class="text-xl font-bold">Add Project</span>
                     <div class="text-4xl font-bold mt-2">+</div>
                     <p class="text-sm font-semibold mt-2">Semester 3</p>
                 </div>
-            </div>
+            </a>
+
 
             <!-- Semester 4 - 8 -->
             @for ($i = 4; $i <= 8; $i++)

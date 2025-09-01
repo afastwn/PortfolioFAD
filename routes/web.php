@@ -7,3 +7,4 @@ Route::get('/', function () {return view('welcome');});
 Route::get('/utama', function () {return view('utama');});
 Route::get('/homeMhs', function () {return view('homeMhs');});
 Route::get('/myWorksMhs', function () {return view('myWorksMhs');});
+Route::get('/addProjectMhs', function () {return view('addProjectMhs');});
