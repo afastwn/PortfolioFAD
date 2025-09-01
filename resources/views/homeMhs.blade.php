@@ -13,20 +13,20 @@
 
     <!-- Personal Works -->
     <section class="mt-6">
-        <h2 class="text-xl font-extrabold mb-4">Personal Works</h2>
+        <h2 class="text-3xl font-extrabold mb-4">Personal Works</h2>
 
         <div class="flex justify-center">
             <div class="grid grid-cols-2 gap-6 w-1/2">
                 <!-- Box Total -->
                 <div
-                    class="bg-white border border-gray-200 rounded-xl flex flex-col items-center justify-center w-64 h-64 shadow hover:shadow-lg hover:scale-105 transition">
+                    class="bg-white border border-gray-200 rounded-xl flex flex-col items-center justify-center w-128 h-64 shadow hover:shadow-lg hover:scale-105 transition">
                     <p class="text-3xl font-extrabold">14</p>
                     <p class="font-medium mt-1">Total</p>
                 </div>
 
                 <!-- Box Published -->
                 <div
-                    class="bg-white border border-gray-200 rounded-xl flex flex-col items-center justify-center w-64 h-64 shadow hover:shadow-lg hover:scale-105 transition">
+                    class="bg-white border border-gray-200 rounded-xl flex flex-col items-center justify-center w-128 h-64 shadow hover:shadow-lg hover:scale-105 transition">
                     <p class="text-3xl font-extrabold">7</p>
                     <p class="font-medium mt-1">Published</p>
                 </div>
