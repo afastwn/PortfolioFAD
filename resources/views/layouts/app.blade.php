@@ -65,12 +65,12 @@
             class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition {{ request()->is('myWorksMhs') || request()->is('addProjectMhs') ? 'active-link' : '' }}">
             <i class="fas fa-folder text-[#6b8a99] text-base"></i> My Works
         </a>
-        <a href="/all"
-            class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition">
+        <a href="/allWorksMhs"
+            class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition {{ request()->is('allWorksMhs') ? 'active-link' : '' }}">
             <i class="fas fa-expand text-[#6b8a99] text-base"></i> All Works
         </a>
-        <a href="/profile"
-            class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition">
+        <a href="/profileMhs"
+            class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition {{ request()->is('profileMhs') ? 'active-link' : '' }}">
             <i class="fas fa-user text-[#6b8a99] text-base"></i> Profile
         </a>
     </nav>
