@@ -5,7 +5,7 @@
         <meta charset="utf-8" />
         <meta content="width=device-width, initial-scale=1" name="viewport" />
         <title>
-            Home Page
+            Login Page
         </title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
@@ -23,14 +23,20 @@
         </style>
     </head>
 
-    <body
-        class="relative min-h-screen overflow-x-hidden bg-[url('/BG.png')] bg-no-repeat bg-left-top bg-[length:2500px_auto]">
-        <!-- Top left logo and wave lines -->
-        <div class="absolute top-6 left-6 z-20 flex flex-col items-start">
-            <img alt="Logo with a shield shape and text below" class="w-[60px] h-[80px] object-contain mb-4"
-                height="80" src="/ukdw.png" width="60" />
-            
+    <body class="relative min-h-screen overflow-x-hidden bg-[url('/BG.png')] bg-no-repeat bg-left-top bg-cover">
+        <div class="px-6 sm:px-8 pt-6">
+            <div class="flex items-center justify-between">
+                <img src="/DWDP.png" alt="Logo" class="h-16 w-auto object-contain">
+                <div class="flex items-center gap-2">
+                    <a href="/aboutUS" class="italic text-black hover:text-gray-800 hover:underline transition">
+                        About us
+                    </a>
+                </div>
+
+            </div>
         </div>
+
+
         <main class="max-w-7xl mx-auto py-12 grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-12">
             <!-- Left column images -->
             <div class="flex flex-col gap-y-12">
@@ -123,14 +129,13 @@
                             </i>
                         </figcaption>
                     </figure>
-                    <button aria-label="Show more content"
-                        class="mt-6 text-sm font-semibold italic text-slate-700 hover:text-slate-900">
-                        SHOW MORE &gt;&gt;
-                    </button>
+                    <a href="/showGalery" class="mt-6 text-sm font-semibold italic text-slate-700 hover:text-slate-900">
+                        SHOW MORE &raquo;&raquo;
+                    </a>
                 </div>
             </div>
 
-            
+
             </div>
             <!-- Right column images -->
             <div class="flex flex-col gap-y-12">

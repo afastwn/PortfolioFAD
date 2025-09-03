@@ -10,3 +10,5 @@ Route::get('/myWorksMhs', function () {return view('myWorksMhs');});
 Route::get('/addProjectMhs', function () {return view('addProjectMhs');});
 Route::get('/allWorksMhs', function () {return view('allWorksMhs');});
 Route::get('/profileMhs', function () {return view('profileMhs');});
+Route::get('/showGalery', function () {return view('showGalery');});
+Route::get('/aboutUS', function () {return view('aboutUS');});
