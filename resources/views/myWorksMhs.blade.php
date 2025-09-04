@@ -12,7 +12,6 @@
 
     <section>
         <div class="grid grid-cols-3 gap-6">
-            <!-- Baris 1 -->
             <!-- Project 1 -->
             <div
                 class="bg-white rounded-xl shadow hover:shadow-lg overflow-hidden relative transition-transform duration-200 hover:scale-[1.02] aspect-square flex flex-col p-5">
@@ -23,8 +22,8 @@
                     <div class="flex justify-between items-center mt-auto">
                         <p class="text-sm font-semibold">Semester 1</p>
                         <div class="flex gap-2 text-blue-600">
-                            <i class="fas fa-eye cursor-pointer"></i>
-                            <i class="fas fa-pencil-alt cursor-pointer"></i>
+                            <a href="#" title="Preview"><i class="fas fa-eye cursor-pointer"></i></a>
+                            <a href="/editProjectMhs/1" title="Edit"><i class="fas fa-pencil-alt cursor-pointer"></i></a>
                         </div>
                     </div>
                 </div>
@@ -41,8 +40,8 @@
                     <div class="flex justify-between items-center mt-auto">
                         <p class="text-sm font-semibold">Semester 2</p>
                         <div class="flex gap-2 text-blue-600">
-                            <i class="fas fa-eye cursor-pointer"></i>
-                            <i class="fas fa-pencil-alt cursor-pointer"></i>
+                            <a href="#" title="Preview"><i class="fas fa-eye cursor-pointer"></i></a>
+                            <a href="/editProjectMhs/2" title="Edit"><i class="fas fa-pencil-alt cursor-pointer"></i></a>
                         </div>
                     </div>
                 </div>
@@ -58,7 +57,6 @@
                 </div>
             </a>
 
-
             <!-- Semester 4 - 8 -->
             @for ($i = 4; $i <= 8; $i++)
                 <div
@@ -71,5 +69,4 @@
             @endfor
         </div>
     </section>
-
 @endsection

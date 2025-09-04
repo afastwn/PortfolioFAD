@@ -62,9 +62,11 @@
             <i class="fas fa-th-large text-[#6b8a99] text-base"></i> Home
         </a>
         <a href="/myWorksMhs"
-            class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition {{ request()->is('myWorksMhs') || request()->is('addProjectMhs') ? 'active-link' : '' }}">
+            class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition
+          {{ request()->is('myWorksMhs') || request()->is('addProjectMhs') || request()->is('editProjectMhs*') ? 'active-link' : '' }}">
             <i class="fas fa-folder text-[#6b8a99] text-base"></i> My Works
         </a>
+
         <a href="/allWorksMhs"
             class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition {{ request()->is('allWorksMhs') ? 'active-link' : '' }}">
             <i class="fas fa-expand text-[#6b8a99] text-base"></i> All Works

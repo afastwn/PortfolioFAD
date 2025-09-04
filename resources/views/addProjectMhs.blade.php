@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Add Project')
+@php
+    $isEdit = isset($mode) && $mode === 'edit';
+    $project = isset($project) ? (object) $project : (object) [];
+@endphp
+
+@section('title', $isEdit ? 'Edit Project' : 'Add Project')
 
 @section('content')
     <header class="flex justify-between items-center border-b border-gray-300 pb-3 mb-8">
@@ -108,89 +113,92 @@
 
         <!-- ================= RIGHT: BASIC INFO + BUTTONS ================= -->
         <div class="flex flex-col gap-4">
-            <!-- Kotak Basic Info -->
             <div class="bg-white border rounded-xl shadow p-6 space-y-5">
                 <h2 class="text-2xl font-extrabold">Basic Info</h2>
 
                 <!-- Project Title -->
                 <div>
                     <label class="block text-sm font-semibold mb-1">Project Title</label>
-                    <input type="text" class="w-full border rounded-lg p-2">
+                    <input type="text" class="w-full border rounded-lg p-2"
+                        value="{{ $isEdit ? $project->title ?? '' : '' }}">
                 </div>
 
                 <!-- Category & Course -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold mb-1">Category</label>
+                        @php $cat = $isEdit ? ($project->category ?? '') : ''; @endphp
                         <select class="w-full border rounded-lg p-2">
                             <option value=""></option>
-                            <option>Home and Seating Furniture</option>
-                            <option>Bedroom Furniture and Beds</option>
-                            <option>Lamps and Luminaires</option>
-                            <option>Lighting Systems</option>
-                            <option>Household Appliances and Household Accessories</option>
-                            <option>Kitchens and Kitchen Furniture</option>
-                            <option>Kitchen Taps and Sinks</option>
-                            <option>Kitchen Appliances and Kitchen Accessories</option>
-                            <option>Cookware and Cooking Utensils</option>
-                            <option>Tableware</option>
-                            <option>Bathroom and Sanitary Equipment</option>
-                            <option>Bathroom Taps and Shower Heads</option>
-                            <option>Garden Furniture</option>
-                            <option>Garden Appliances and Garden Equipment</option>
-                            <option>Outdoor and Camping Equipment</option>
-                            <option>Sports Equipment</option>
-                            <option>Hobby and Leisure</option>
-                            <option>Bicycles and Bicycle Accessories</option>
-                            <option>Babies and Children</option>
-                            <option>Personal Care, Wellness and Beauty</option>
-                            <option>Fashion and Lifestyle Accessories</option>
-                            <option>Luggage and Bags</option>
-                            <option>Eyewear</option>
-                            <option>Watches</option>
-                            <option>Jewellery</option>
-                            <option>Interior Architecture</option>
-                            <option>Interior Design Elements</option>
-                            <option>Urban Design</option>
-                            <option>Materials and Surfaces</option>
-                            <option>Office Furniture and Office Chairs</option>
-                            <option>Office Supplies and Stationery</option>
-                            <option>Tools</option>
-                            <option>Heating and Air Conditioning Technology</option>
-                            <option>Industrial Equipment, Machinery and Automation</option>
-                            <option>Robotics</option>
-                            <option>Medical Devices and Technology</option>
-                            <option>Healthcare</option>
-                            <option>Cars and Motorcycles</option>
-                            <option>Motorhomes and Caravans</option>
-                            <option>Watercraft</option>
-                            <option>Trains and Planes</option>
-                            <option>Commercial Vehicles</option>
-                            <option>Vehicle Accessories</option>
-                            <option>TV and Home Entertainment</option>
-                            <option>Audio</option>
-                            <option>Cameras and Camera Equipment</option>
-                            <option>Drones and Action Cameras</option>
-                            <option>Mobile Phones, Tablets and Wearables</option>
-                            <option>Communication Technology</option>
-                            <option>Computer and Information Technology</option>
-                            <option>Gaming and Streaming</option>
-                            <option>Packaging</option>
+                            @foreach ([
+            'Home and Seating Furniture',
+            'Bedroom Furniture and Beds',
+            'Lamps and Luminaires',
+            'Lighting Systems',
+            'Household Appliances and Household Accessories',
+            'Kitchens and Kitchen Furniture',
+            'Kitchen Taps and Sinks',
+            'Kitchen Appliances and Kitchen Accessories',
+            'Cookware and Cooking Utensils',
+            'Tableware',
+            'Bathroom and Sanitary Equipment',
+            'Bathroom Taps and Shower Heads',
+            'Garden Furniture',
+            'Garden Appliances and Garden Equipment',
+            'Outdoor and Camping Equipment',
+            'Sports Equipment',
+            'Hobby and Leisure',
+            'Bicycles and Bicycle Accessories',
+            'Babies and Children',
+            'Personal Care, Wellness and Beauty',
+            'Fashion and Lifestyle Accessories',
+            'Luggage and Bags',
+            'Eyewear',
+            'Watches',
+            'Jewellery',
+            'Interior Architecture',
+            'Interior Design Elements',
+            'Urban Design',
+            'Materials and Surfaces',
+            'Office Furniture and Office Chairs',
+            'Office Supplies and Stationery',
+            'Tools',
+            'Heating and Air Conditioning Technology',
+            'Industrial Equipment, Machinery and Automation',
+            'Robotics',
+            'Medical Devices and Technology',
+            'Healthcare',
+            'Cars and Motorcycles',
+            'Motorhomes and Caravans',
+            'Watercraft',
+            'Trains and Planes',
+            'Commercial Vehicles',
+            'Vehicle Accessories',
+            'TV and Home Entertainment',
+            'Audio',
+            'Cameras and Camera Equipment',
+            'Drones and Action Cameras',
+            'Mobile Phones, Tablets and Wearables',
+            'Communication Technology',
+            'Computer and Information Technology',
+            'Gaming and Streaming',
+            'Packaging',
+        ] as $opt)
+                                <option value="{{ $opt }}" {{ $cat === $opt ? 'selected' : '' }}>
+                                    {{ $opt }}</option>
+                            @endforeach
                         </select>
                     </div>
 
                     <div>
                         <label class="block text-sm font-semibold mb-1">Course</label>
+                        @php $courseVal = $isEdit ? ($project->course ?? '') : ''; @endphp
                         <select name="course" class="w-full border rounded-lg p-2">
                             <option value=""></option>
-                            <option>Course 1</option>
-                            <option>Course 2</option>
-                            <option>Course 3</option>
-                            <option>Course 4</option>
-                            <option>Course 5</option>
-                            <option>Course 6</option>
-                            <option>Course 7</option>
-                            <option>Course 8</option>
+                            @foreach (['Course 1', 'Course 2', 'Course 3', 'Course 4', 'Course 5', 'Course 6', 'Course 7', 'Course 8'] as $c)
+                                <option value="{{ $c }}" {{ $courseVal === $c ? 'selected' : '' }}>
+                                    {{ $c }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
@@ -199,48 +207,51 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold mb-1">Client</label>
-                        <input type="text" class="w-full border rounded-lg p-2">
+                        <input type="text" class="w-full border rounded-lg p-2"
+                            value="{{ $isEdit ? $project->client ?? '' : '' }}">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-1">Project Date</label>
-                        <input type="date" class="w-full border rounded-lg p-2">
+                        <input type="date" class="w-full border rounded-lg p-2"
+                            value="{{ $isEdit ? $project->project_date ?? '' : '' }}">
                     </div>
                 </div>
 
                 <!-- Design Brief -->
                 <div>
                     <label class="block text-sm font-semibold mb-1">Design Brief</label>
-                    <textarea rows="3" placeholder="Concept / Abstract" class="w-full border rounded-lg p-2"></textarea>
+                    <textarea rows="3" placeholder="Concept / Abstract" class="w-full border rounded-lg p-2">{{ $isEdit ? $project->design_brief ?? '' : '' }}</textarea>
                 </div>
 
                 <!-- Design Process -->
                 <div>
                     <label class="block text-sm font-semibold mb-1">Design Process</label>
-                    <textarea rows="3" placeholder="Data, Sketch, Prototyping" class="w-full border rounded-lg p-2"></textarea>
+                    <textarea rows="3" placeholder="Data, Sketch, Prototyping" class="w-full border rounded-lg p-2">{{ $isEdit ? $project->design_process ?? '' : '' }}</textarea>
                 </div>
 
                 <!-- Specifications -->
                 <h3 class="text-lg font-bold">Specifications</h3>
                 <div class="space-y-4">
                     <div>
-                        <input type="text" placeholder="Material Specifications" class="w-full border rounded-lg p-2">
+                        <input type="text" placeholder="Material Specifications" class="w-full border rounded-lg p-2"
+                            value="{{ $isEdit ? $project->spec_material ?? '' : '' }}">
                     </div>
                     <div>
-                        <input type="text" placeholder="Size Specifications" class="w-full border rounded-lg p-2">
+                        <input type="text" placeholder="Size Specifications" class="w-full border rounded-lg p-2"
+                            value="{{ $isEdit ? $project->spec_size ?? '' : '' }}">
                     </div>
                 </div>
             </div>
 
-            <!-- Tombol di bawah kotak Basic Info (masih di kolom kanan) -->
+            <!-- Tombol bawah -->
             <div class="grid grid-cols-2 gap-4">
                 <a href="/myWorksMhs" class="w-full py-4 border rounded-lg text-center block">
                     Cancel
                 </a>
                 <button class="w-full py-4 bg-blue-600 text-white rounded-lg text-center">
-                    Save Project
+                    {{ $isEdit ? 'Save Changes' : 'Save Project' }}
                 </button>
             </div>
-
         </div>
     </div>
 
@@ -286,9 +297,7 @@
                     deleteBtn.className = "absolute top-1 right-1 bg-white p-1 text-xs rounded shadow";
                     deleteBtn.onclick = () => wrapper.remove();
 
-                    wrapper.appendChild(img);
-                    wrapper.appendChild(editBtn);
-                    wrapper.appendChild(deleteBtn);
+                    wrapper.append(img, editBtn, deleteBtn);
                     preview.appendChild(wrapper);
                 };
                 reader.readAsDataURL(file);
@@ -338,13 +347,86 @@
                     wrapper.remove();
                 };
 
-                wrapper.appendChild(video);
-                wrapper.appendChild(editBtn);
-                wrapper.appendChild(deleteBtn);
+                wrapper.append(video, editBtn, deleteBtn);
                 preview.appendChild(wrapper);
             });
 
             input.value = "";
+        }
+
+        // ========= PRELOAD media lama kalau edit =========
+        const IS_EDIT = @json($isEdit);
+        const PRELOAD = IS_EDIT ? {
+            final: @json($project->final_product_urls ?? []),
+            process: @json($project->design_process_urls ?? []),
+            testing: @json($project->testing_photo_urls ?? []),
+            display: @json($project->display_photo_urls ?? []),
+            poster: @json($project->poster_urls ?? []),
+            video: @json($project->video_urls ?? []),
+        } : null;
+
+        function makeImageThumb(src) {
+            const wrapper = document.createElement("div");
+            wrapper.className = "relative inline-block";
+            const img = document.createElement("img");
+            img.src = src;
+            img.className = "max-h-32 object-contain rounded-lg border";
+            const editBtn = document.createElement("button");
+            editBtn.innerHTML = "✏";
+            editBtn.className = "absolute top-1 left-1 bg-white p-1 text-xs rounded shadow";
+            editBtn.onclick = () => {
+                const i = document.createElement("input");
+                i.type = "file";
+                i.accept = "image/*";
+                i.onchange = ev => {
+                    if (ev.target.files[0]) {
+                        const r = new FileReader();
+                        r.onload = e2 => {
+                            img.src = e2.target.result;
+                        };
+                        r.readAsDataURL(ev.target.files[0]);
+                    }
+                };
+                i.click();
+            };
+            const delBtn = document.createElement("button");
+            delBtn.innerHTML = "✖";
+            delBtn.className = "absolute top-1 right-1 bg-white p-1 text-xs rounded shadow";
+            delBtn.onclick = () => wrapper.remove();
+            wrapper.append(img, editBtn, delBtn);
+            return wrapper;
+        }
+
+        function makeVideoThumb(src) {
+            const wrapper = document.createElement("div");
+            wrapper.className = "relative inline-block";
+            const video = document.createElement("video");
+            video.src = src;
+            video.controls = true;
+            video.className = "max-h-40 max-w-xs object-contain rounded-lg border";
+            const delBtn = document.createElement("button");
+            delBtn.innerHTML = "✖";
+            delBtn.className = "absolute top-1 right-1 bg-white p-1 text-xs rounded shadow";
+            delBtn.onclick = () => wrapper.remove();
+            wrapper.append(video, delBtn);
+            return wrapper;
+        }
+
+        if (IS_EDIT) {
+            window.addEventListener('DOMContentLoaded', () => {
+                (PRELOAD.final || []).forEach(u => document.getElementById('finalProductPreview').appendChild(
+                    makeImageThumb(u)));
+                (PRELOAD.process || []).forEach(u => document.getElementById('designProcessPreview').appendChild(
+                    makeImageThumb(u)));
+                (PRELOAD.testing || []).forEach(u => document.getElementById('testingphotoPreview').appendChild(
+                    makeImageThumb(u)));
+                (PRELOAD.display || []).forEach(u => document.getElementById('displayphotoPreview').appendChild(
+                    makeImageThumb(u)));
+                (PRELOAD.poster || []).forEach(u => document.getElementById('posterPreview').appendChild(
+                    makeImageThumb(u)));
+                (PRELOAD.video || []).forEach(u => document.getElementById('videoPreview').appendChild(
+                    makeVideoThumb(u)));
+            });
         }
     </script>
 @endsection
