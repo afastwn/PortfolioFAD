@@ -1,5 +1,5 @@
 {{-- resources/views/homeMhs.blade.php --}}
-@extends('layouts.app')
+@extends('layouts.appMhs')
 
 @section('title', 'Home')
 

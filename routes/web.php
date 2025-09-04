@@ -3,11 +3,14 @@
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('/', function () {return view('welcome');});
+// Route::get('/', function () {return view('welcome');});
 Route::get('/utama', function () {return view('utama');});
-Route::get('/homeMhs', function () {return view('homeMhs');});
-Route::get('/myWorksMhs', function () {return view('myWorksMhs');});
-Route::get('/addProjectMhs', function () {return view('addProjectMhs');});
+Route::get('/aboutUS', function () {return view('aboutUS');});
+
+//MAHASISWA//
+Route::get('/homeMhs', function () {return view('mhs.homeMhs');});
+Route::get('/myWorksMhs', function () {return view('mhs.myWorksMhs');});
+Route::get('/addProjectMhs', function () {return view('mhs.addProjectMhs');});
 Route::get('/editProjectMhs/{id}', function ($id) {
     if ($id == 1) {
         $project = (object)[
@@ -53,10 +56,53 @@ Route::get('/editProjectMhs/{id}', function ($id) {
         abort(404);
     }
 
-    return view('addProjectMhs', ['mode' => 'edit', 'project' => $project]);
+    return view('mhs.addProjectMhs', ['mode' => 'edit', 'project' => $project]);
 });
 
-Route::get('/allWorksMhs', function () {return view('allWorksMhs');});
-Route::get('/profileMhs', function () {return view('profileMhs');});
+Route::get('/allWorksMhs', function () {return view('mhs.allWorksMhs');});
+Route::get('/profileMhs', function () {return view('mhs.profileMhs');});
 Route::get('/showGalery', function () {return view('showGalery');});
-Route::get('/aboutUS', function () {return view('aboutUS');});
+
+//DOSEN
+Route::get('/vPortfolio', function () {return view('dosen.vPortfolio');});
+Route::get('/profileDsn', function () {return view('dosen.profileDsn');});
+Route::get('/studentProfiling', function () {return view('dosen.studentProfiling');});
+Route::get('/dashboardDsn', function () {return view('dosen.dashboardDsn');});
+Route::get('/studentProfiling/{id}', function ($id) {
+    $rows = [
+        ['id'=>'20462','name'=>'Matt Dickerson','cat'=>'Lighting Systems'],
+        ['id'=>'18933','name'=>'Wiktoria','cat'=>'Sports Equipment'],
+        ['id'=>'45169','name'=>'Trixie Byrd','cat'=>'Vehicle Accessories'],
+        ['id'=>'73003','name'=>'Jun Redfern','cat'=>'Watercraft'],
+        ['id'=>'58825','name'=>'Miriam Kidd','cat'=>'Robotics'],
+        ['id'=>'44122','name'=>'Dominic','cat'=>'Office Supplies and Stationery'],
+        ['id'=>'89094','name'=>'Shanice','cat'=>'Computer and Information Technology'],
+        ['id'=>'85252','name'=>'Poppy-Rose','cat'=>'Gaming and Streaming'],
+        ['id'=>'99001','name'=>'Aria','cat'=>'Gaming and Streaming'],
+        ['id'=>'99002','name'=>'Liam','cat'=>'Watches'],
+        ['id'=>'99003','name'=>'Noah','cat'=>'Sports Equipment'],
+    ];
+
+    $base = collect($rows)->firstWhere('id', $id);
+    abort_if(!$base, 404);
+
+    $detail = ['phone'=>'-', 'address'=>'-', 'email'=>'-'];
+
+    $portfolio = [
+        ['title'=>'Project 1','course'=>'Course Name','semester'=>'Semester 1','img'=>'/G1.png'],
+        ['title'=>'Project 2','course'=>'Course Name','semester'=>'Semester 2','img'=>'/G2.png'],
+    ];
+
+    $mhs = (object)[
+        'id'   => $base['id'],
+        'name' => $base['name'],
+        'cat'  => $base['cat'],   // <— penting
+        'phone'=> $detail['phone'],
+        'address'=>$detail['address'],
+        'email'=> $detail['email'],
+        'portfolio'=>$portfolio,
+    ];
+
+    return view('dosen.showProfile', compact('mhs'));
+})->name('showProfile')->where('id', '[0-9]+');
+

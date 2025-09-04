@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.appMhs')
 
 @php
     $isEdit = isset($mode) && $mode === 'edit';
