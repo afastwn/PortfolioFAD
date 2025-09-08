@@ -53,8 +53,11 @@
 
     <!-- Logo -->
     <div class="absolute -top-12 left-6 z-20 flex flex-col items-start">
-        <img alt="Logo" src="/DWDP.png" class="w-[120px] h-[160px] object-contain mb-4" />
+        <a href="/utama"> {{-- arahkan ke login, atau ganti sesuai route utama --}}
+            <img alt="Logo" src="/DWDP.png" class="w-[120px] h-[160px] object-contain mb-4 cursor-pointer" />
+        </a>
     </div>
+
 
     <!-- Sidebar -->
     <nav class="absolute top-0 left-0 min-h-screen w-48 bg-transparent flex flex-col pt-32 pb-8 px-4 space-y-2 text-xs">

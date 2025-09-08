@@ -45,13 +45,25 @@
     </div>
 
     {{-- Row 2: Map --}}
+    {{-- Row 2: Map (Static 2D) --}}
     <div class="mt-10">
         <div class="bg-white rounded-2xl border border-gray-200 shadow p-4 sm:p-6">
             <h3 class="text-xs sm:text-sm font-extrabold tracking-wide mb-4">SCHOOL ORIGIN</h3>
 
-            <div id="indoMap" class="w-full h-[480px] rounded-xl border border-gray-200"></div>
+            {{-- Container peta statis --}}
+            <div class="relative w-full overflow-hidden rounded-xl border border-gray-200">
+                {{-- 1) Simpan gambar peta 2D-mu sebagai /img/indo-2d.png --}}
+                <img src="/INDONESIA.png" alt="Indonesia 2D Map" class="w-full h-auto block select-none">
+
+                
+            </div>
+
+            <p class="mt-3 text-xs text-gray-500">
+                *Peta statis Indonesia
+            </p>
         </div>
     </div>
+
 
     {{-- Leaflet JS & CSS --}}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
