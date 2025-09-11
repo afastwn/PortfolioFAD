@@ -64,7 +64,7 @@
 
         <!-- Tombol kembali -->
         <div class="mt-8 flex justify-center">
-            <a href="/utama"
+            <a href="/login"
                 class="inline-flex items-center justify-center px-6 h-12 rounded-xl bg-sky-500 text-white font-bold shadow-md hover:bg-sky-600">
                 Back to Home
             </a>

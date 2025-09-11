@@ -82,7 +82,7 @@
     <!-- SIGN IN button (sementara) -->
     <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-6">
         <div class="flex justify-center">
-            <a href="/utama"
+            <a href="/login"
                 class="inline-flex items-center justify-center w-40 h-11 rounded-md bg-blue-600 text-white font-extrabold tracking-wide hover:bg-blue-700">
                 SIGN IN
             </a>
