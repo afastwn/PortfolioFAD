@@ -84,34 +84,51 @@
                 </figure>
             </div>
             <div class="flex flex-col items-center">
-                <!-- Center login box -->
-                <div class="shadow-md relative w-full max-w-3xl mx-auto" style="box-shadow: 2px 2px 6px #b8b8b8;">
-                    <section class="bg-[#d3ecfc] rounded-xl px-12 pt-10 pb-8 w-full shadow-md">
-                        <h1 class="text-4xl font-extrabold text-center mb-6 leading-tight">
-                            WELCOME <br /> BACK!
-                        </h1>
-                        <form action="{{ url('/homeMhs') }}" method="get" class="w-full space-y-5">
-                            <div>
-                                <input
-                                    class="w-full rounded-lg py-3 px-4 text-sm placeholder-gray-400 shadow-md focus:outline-none focus:ring-2 focus:ring-sky-400"
-                                    placeholder="Username" type="text" />
-                            </div>
-                            <div>
-                                <input
-                                    class="w-full rounded-lg py-3 px-4 text-sm placeholder-gray-400 shadow-md focus:outline-none focus:ring-2 focus:ring-sky-400"
-                                    placeholder="Password" type="password" />
-                                <p class="text-xs italic text-right mt-1 text-slate-600">
-                                    Forgot Password?
-                                </p>
-                            </div>
-                            <button
-                                class="w-full bg-sky-400 hover:bg-sky-500 text-white font-bold py-3 rounded-lg shadow-md transition-colors"
-                                type="submit">
-                                Login
-                            </button>
-                        </form>
-                    </section>
-                </div>
+                <!-- Center login form -->
+                <section class="bg-[#d3ecfc] rounded-xl px-12 pt-10 pb-8 w-full shadow-md">
+                    <h1 class="text-4xl font-extrabold text-center mb-6 leading-tight">
+                        WELCOME <br /> BACK!
+                    </h1>
+
+                    {{-- alert error --}}
+                    @if ($errors->any())
+                        <div class="mb-4 text-sm text-red-700">
+                            {{ $errors->first() }}
+                        </div>
+                    @endif
+
+                    <form action="{{ route('login.store') }}" method="POST" class="w-full space-y-5">
+                        @csrf
+
+                        {{-- Mahasiswa isi NIM; Dosen isi Email --}}
+                        <div>
+                            <input name="login" value="{{ old('login') }}"
+                                class="w-full rounded-lg py-3 px-4 text-sm placeholder-gray-400 shadow-md focus:outline-none focus:ring-2 focus:ring-sky-400"
+                                placeholder="NIM (Mahasiswa) / Email UKDW (Dosen)" type="text" required />
+                        </div>
+
+                        <div>
+                            <input name="password"
+                                class="w-full rounded-lg py-3 px-4 text-sm placeholder-gray-400 shadow-md focus:outline-none focus:ring-2 focus:ring-sky-400"
+                                placeholder="Password" type="password" required />
+                            <p class="text-xs italic text-right mt-1 text-slate-600">
+                                {{-- taruh link reset password kalau nanti dipakai --}}
+                            </p>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <input id="remember" name="remember" type="checkbox" class="h-4 w-4">
+                            <label for="remember" class="text-sm">Remember me</label>
+                        </div>
+
+                        <button
+                            class="w-full bg-sky-400 hover:bg-sky-500 text-white font-bold py-3 rounded-lg shadow-md transition-colors"
+                            type="submit">
+                            Login
+                        </button>
+                    </form>
+                </section>
+
                 <!-- Center bottom image with reactions and show more -->
                 <div class="col-span-1 sm:col-span-2 flex flex-col items-center mt-6">
                     <figure class="bg-white shadow-md p-4 relative w-full max-w-3xl mx-auto"

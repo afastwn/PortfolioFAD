@@ -59,25 +59,31 @@
 
     <!-- Sidebar -->
     <nav class="absolute top-0 left-0 min-h-screen w-48 bg-transparent flex flex-col pt-32 pb-8 px-4 space-y-2 text-xs">
-        <a href="/homeMhs"
-            class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition {{ request()->is('homeMhs') ? 'active-link' : '' }}">
+        <a href="{{ route('mhs.dashboard') }}"
+            class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition
+              {{ request()->routeIs('mhs.dashboard') || request()->routeIs('mhs.home') ? 'active-link' : '' }}">
             <i class="fas fa-th-large text-[#6b8a99] text-base"></i> Home
         </a>
-        <a href="/myWorksMhs"
+
+        <a href="{{ route('mhs.myworks') }}"
             class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition
-          {{ request()->is('myWorksMhs') || request()->is('addProjectMhs') || request()->is('editProjectMhs*') ? 'active-link' : '' }}">
+              {{ request()->routeIs('mhs.myworks') || request()->routeIs('mhs.add') || request()->routeIs('mhs.edit') ? 'active-link' : '' }}">
             <i class="fas fa-folder text-[#6b8a99] text-base"></i> My Works
         </a>
 
-        <a href="/allWorksMhs"
-            class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition {{ request()->is('allWorksMhs') ? 'active-link' : '' }}">
+        <a href="{{ route('mhs.allworks') }}"
+            class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition
+              {{ request()->routeIs('mhs.allworks') ? 'active-link' : '' }}">
             <i class="fas fa-expand text-[#6b8a99] text-base"></i> All Works
         </a>
-        <a href="/profileMhs"
-            class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition {{ request()->is('profileMhs') ? 'active-link' : '' }}">
+
+        <a href="{{ route('mhs.profile') }}"
+            class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition
+              {{ request()->routeIs('mhs.profile') ? 'active-link' : '' }}">
             <i class="fas fa-user text-[#6b8a99] text-base"></i> Profile
         </a>
     </nav>
+
 
 
     <!-- Main Content -->

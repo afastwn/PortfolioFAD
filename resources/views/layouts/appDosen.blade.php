@@ -61,24 +61,31 @@
 
     <!-- Sidebar -->
     <nav class="absolute top-0 left-0 min-h-screen w-48 bg-transparent flex flex-col pt-32 pb-8 px-4 space-y-2 text-xs">
-        <a href="/dashboardDsn"
-            class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition {{ request()->is('dashboardDsn') ? 'active-link' : '' }}">
+        <a href="{{ route('dosen.dashboard') }}"
+            class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition
+              {{ request()->routeIs('dosen.dashboard') ? 'active-link' : '' }}">
             <i class="fas fa-th-large text-[#6b8a99] text-base"></i> Dashboard
         </a>
-        <a href="/studentProfiling"
+
+        <a href="{{ route('dosen.studentProfiling') }}"
             class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition
-          {{ request()->is('studentProfiling') || request()->is('studentProfiling/*') ? 'active-link' : '' }}">
+              {{ request()->routeIs('dosen.studentProfiling*') || request()->routeIs('dosen.showProfile') ? 'active-link' : '' }}">
             <i class="fas fa-folder text-[#6b8a99] text-base"></i> Student Profiling
         </a>
-        <a href="/vPortfolio"
-            class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition {{ request()->is('vPortfolio') ? 'active-link' : '' }}">
+
+        <a href="{{ route('dosen.vportfolio') }}"
+            class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition
+              {{ request()->routeIs('dosen.vportfolio') ? 'active-link' : '' }}">
             <i class="fas fa-expand text-[#6b8a99] text-base"></i> View Portfolio
         </a>
-        <a href="/profileDsn"
-            class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition {{ request()->is('profileDsn') ? 'active-link' : '' }}">
+
+        <a href="{{ route('dosen.profile') }}"
+            class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition
+              {{ request()->routeIs('dosen.profile') ? 'active-link' : '' }}">
             <i class="fas fa-user text-[#6b8a99] text-base"></i> Profile
         </a>
     </nav>
+
 
 
     <!-- Main Content -->

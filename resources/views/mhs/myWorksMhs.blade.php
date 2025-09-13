@@ -23,7 +23,8 @@
                         <p class="text-sm font-semibold">Semester 1</p>
                         <div class="flex gap-2 text-blue-600">
                             <a href="#" title="Preview"><i class="fas fa-eye cursor-pointer"></i></a>
-                            <a href="/editProjectMhs/1" title="Edit"><i class="fas fa-pencil-alt cursor-pointer"></i></a>
+                            <a href="{{ route('mhs.edit', ['id' => 1]) }}" title="Edit"><i
+                                    class="fas fa-pencil-alt cursor-pointer"></i></a>
                         </div>
                     </div>
                 </div>
@@ -41,14 +42,15 @@
                         <p class="text-sm font-semibold">Semester 2</p>
                         <div class="flex gap-2 text-blue-600">
                             <a href="#" title="Preview"><i class="fas fa-eye cursor-pointer"></i></a>
-                            <a href="/editProjectMhs/2" title="Edit"><i class="fas fa-pencil-alt cursor-pointer"></i></a>
+                            <a href="{{ route('mhs.edit', ['id' => 2]) }}" title="Edit"><i
+                                    class="fas fa-pencil-alt cursor-pointer"></i></a>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Add Project -->
-            <a href="/addProjectMhs"
+            <a href="{{ route('mhs.add') }}"
                 class="bg-white rounded-xl shadow hover:shadow-lg flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-transform duration-200 hover:scale-[1.02] aspect-square">
                 <div class="text-center">
                     <span class="text-xl font-bold">Add Project</span>
@@ -56,6 +58,7 @@
                     <p class="text-sm font-semibold mt-2">Semester 3</p>
                 </div>
             </a>
+
 
             <!-- Semester 4 - 8 -->
             @for ($i = 4; $i <= 8; $i++)

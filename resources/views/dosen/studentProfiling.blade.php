@@ -76,7 +76,7 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-4">
                                     <!-- Person biru: nanti untuk modal detail -->
-                                    <a href="{{ route('showProfile', $r['id']) }}"
+                                    <a href="{{ route('dosen.showProfile', $r['id']) }}"
                                         class="text-blue-600 hover:text-blue-700">
                                         <i class="fas fa-user"></i>
                                     </a>

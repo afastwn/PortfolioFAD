@@ -245,7 +245,7 @@
 
             <!-- Tombol bawah -->
             <div class="grid grid-cols-2 gap-4">
-                <a href="/myWorksMhs" class="w-full py-4 border rounded-lg text-center block">
+                <a href="{{ route('mhs.myworks') }}" class="w-full py-4 border rounded-lg text-center block">
                     Cancel
                 </a>
                 <button class="w-full py-4 bg-blue-600 text-white rounded-lg text-center">
