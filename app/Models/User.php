@@ -29,4 +29,9 @@ class User extends Authenticatable
     protected $casts = [
         'password' => 'hashed',
     ];
+
+    public function profile()         { return $this->hasOne(Profile::class); }
+    public function campusAct(){ return $this->hasMany(CampusAct::class); }
+    public function skills()          { return $this->hasMany(Skills::class); }
+    public function school()          { return $this->hasOne(School::class); }
 }

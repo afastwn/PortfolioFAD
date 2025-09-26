@@ -53,7 +53,7 @@
 
     <!-- Logo -->
     <div class="absolute -top-12 left-6 z-20 flex flex-col items-start">
-        <a href="/utama"> {{-- arahkan ke login, atau ganti sesuai route utama --}}
+        <a href="/login"> {{-- arahkan ke login, atau ganti sesuai route utama --}}
             <img alt="Logo" src="/DWDP.png" class="w-[120px] h-[160px] object-contain mb-4 cursor-pointer" />
         </a>
     </div>
