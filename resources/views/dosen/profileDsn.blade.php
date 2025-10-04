@@ -30,22 +30,22 @@
                 <!-- Basic Description -->
                 <div>
                     <h3 class="font-semibold mb-4">Basic Description</h3>
-                    <dl class="text-sm">
+                    <dl class="text-xs">
                         <div class="flex items-center gap-3 py-2 border-b border-gray-100">
-                            <dt class="w-44 text-gray-600">NIP/NIPD</dt>
-                            <dd class="flex-1">: {{ $dosen->nip ?? '72220525' }}</dd>
+                            <dt class="w-44 text-gray-600">NIP/NIDN</dt>
+                            <dd class="flex-1">: {{ ($user->nip ?? '-') . ' / ' . ($user->nidn ?? '-') }}</dd>
                         </div>
                         <div class="flex items-center gap-3 py-2 border-b border-gray-100">
                             <dt class="w-44 text-gray-600">FULL NAME</dt>
-                            <dd class="flex-1">: {{ $dosen->name ?? 'Filistera Santoso' }}</dd>
+                            <dd class="flex-1">: {{ $user->name_asli ?? '-' }}</dd>
                         </div>
                         <div class="flex items-center gap-3 py-2 border-b border-gray-100">
-                            <dt class="w-44 text-gray-600">DEPARTEMENT</dt>
-                            <dd class="flex-1">: {{ $dosen->department ?? 'Desain Produk' }}</dd>
+                            <dt class="w-44 text-gray-600">DEPARTMENT</dt>
+                            <dd class="flex-1">: {{ $profil->department ?? '-' }}</dd>
                         </div>
                         <div class="flex items-center gap-3 py-2">
                             <dt class="w-44 text-gray-600">ACADEMIC ADVISOR</dt>
-                            <dd class="flex-1">: {{ $dosen->angkatan ?? '2022' }}</dd>
+                            <dd class="flex-1">: {{ $profil->academic_advisor ?? '-' }}</dd>
                         </div>
                     </dl>
                 </div>
@@ -53,14 +53,14 @@
                 <!-- Contact -->
                 <div>
                     <h3 class="font-semibold mb-4">Contact</h3>
-                    <dl class="text-sm">
+                    <dl class="text-xs">
                         <div class="flex items-center gap-3 py-2 border-b border-gray-100">
                             <dt class="w-44 text-gray-600">PERSONAL EMAIL</dt>
-                            <dd class="flex-1">: {{ $dosen->email ?? '@123' }}</dd>
+                            <dd class="flex-1">: {{ $profil->personal_email ?? '-' }}</dd>
                         </div>
                         <div class="flex items-center gap-3 py-2">
                             <dt class="w-44 text-gray-600">PHONE NUMBER</dt>
-                            <dd class="flex-1">: {{ $dosen->phone ?? '12345' }}</dd>
+                            <dd class="flex-1">: {{ $profil->phone_number ?? '-' }}</dd>
                         </div>
                     </dl>
                 </div>
@@ -76,85 +76,105 @@
         </div>
     </div>
 
-    {{-- ===== MODAL EDIT PROFILE (overlay) – versi DOSEN ===== --}}
+    {{-- ===== MODAL EDIT PROFILE (submit di bawah 2 kolom, sejajar Advisor) ===== --}}
     <div id="editModalDsn" class="fixed inset-0 z-[100] hidden">
-        {{-- Backdrop --}}
         <div class="absolute inset-0 bg-black/50" onclick="closeModal('editModalDsn')"></div>
 
-        {{-- Wrapper flex untuk center --}}
-        <div class="absolute inset-0 flex items-center justify-center p-4">
-            {{-- Dialog --}}
-            <div class="w-full max-w-5xl min-h-[350px] bg-white shadow-lg overflow-hidden">
+        <div class="absolute inset-0 flex items-center justify-center p-6">
+            <div class="relative w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-y-auto"
+                style="max-height: calc(100vh - 120px);">
                 {{-- Header --}}
-                <div class="flex items-center justify-between px-6 py-4 border-b">
-                    <h2 class="text-xl font-extrabold tracking-wide">Edit Profile</h2>
-                    <button class="p-1.5 rounded hover:bg-gray-100" onclick="closeModal('editModalDsn')"
+                <div class="flex items-center justify-between px-8 py-5 border-b">
+                    <h2 class="text-2xl font-extrabold tracking-wide">Profile</h2>
+                    <button class="p-2 rounded hover:bg-gray-100" onclick="closeModal('editModalDsn')"
                         aria-label="Close">✕</button>
                 </div>
 
-                {{-- Body: form (dummy, UI/UX saja) --}}
-                <form method="GET" action="/profileDsn" class="px-6 py-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
-                        {{-- Kolom kiri: Basic Description --}}
+                {{-- Body --}}
+                <form method="POST" action="{{ route('dosen.profile.update') }}" class="px-8 pt-8 pb-6">
+                    @csrf
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-14 gap-y-6">
+                        {{-- KIRI --}}
                         <div>
-                            <h4 class="font-semibold text-lg mb-4">Basic Description</h4>
+                            <h3 class="text-xl font-extrabold mb-6">Basic Description</h3>
 
-                            <label class="block font-semibold mb-2">NIP/NIPD</label>
-                            <input type="text"
-                                class="w-full h-12 px-4 rounded-lg border border-gray-300
-                                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                value="{{ $dosen->nip ?? '72220525' }}" />
+                            {{-- NIP & NIDN sejajar --}}
+                            <div class="flex items-start gap-6">
+                                <div class="w-1/2">
+                                    <label class="block font-semibold mb-1">NIP</label>
+                                    <input name="nip" type="text" readonly
+                                        class="w-full h-11 rounded-lg border border-gray-300 px-3 bg-gray-100 text-gray-600 cursor-not-allowed"
+                                        value="{{ $user->nip ?? '-' }}" />
+                                </div>
+                                <div class="w-1/2">
+                                    <label class="block font-semibold mb-1">NIDN</label>
+                                    <input name="nidn" type="text" readonly
+                                        class="w-full h-11 rounded-lg border border-gray-300 px-3 bg-gray-100 text-gray-600 cursor-not-allowed"
+                                        value="{{ $user->nidn ?? '-' }}" />
+                                </div>
+                            </div>
 
-                            <label class="block font-semibold mt-6 mb-2">Full Name</label>
-                            <input type="text"
-                                class="w-full h-12 px-4 rounded-lg border border-gray-300
-                                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                value="{{ $dosen->name ?? 'Filistera Santoso' }}" />
+                            <label class="block font-semibold mt-6 mb-1">Full Name</label>
+                            <input name="name_asli" type="text" readonly
+                                class="w-full h-11 rounded-lg border border-gray-300 px-3 bg-gray-100 text-gray-600 cursor-not-allowed"
+                                value="{{ $user->name_asli ?? '-' }}" />
 
-                            <label class="block font-semibold mt-6 mb-2">Departement</label>
-                            <input type="text"
-                                class="w-full h-12 px-4 rounded-lg border border-gray-300
-                                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                value="{{ $dosen->department ?? 'Desain Produk' }}" />
+                            <label class="block font-semibold mt-5 mb-1">Department</label>
+                            <input name="department" type="text"
+                                class="w-full h-11 rounded-lg border border-gray-300 px-3 focus:ring-2 focus:ring-blue-500"
+                                value="{{ old('department', $profil->department) }}" />
 
-                            <label class="block font-semibold mt-6 mb-2">Academic Advisor</label>
-                            <input type="text"
-                                class="w-full h-12 px-4 rounded-lg border border-gray-300
-                                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                value="{{ $dosen->angkatan ?? '2022' }}" />
+                            <label class="block font-semibold mt-5 mb-1">Academic Advisor</label>
+                            <input name="academic_advisor" type="text"
+                                class="w-full h-11 rounded-lg border border-gray-300 px-3 focus:ring-2 focus:ring-blue-500"
+                                value="{{ old('academic_advisor', $profil->academic_advisor) }}" />
                         </div>
 
-                        {{-- Kolom kanan: Contact --}}
+                        {{-- KANAN --}}
                         <div>
-                            <h4 class="font-semibold text-lg mb-4">Contact</h4>
+                            <h3 class="text-xl font-extrabold mb-6">Contact</h3>
 
-                            <label class="block font-semibold mb-2">Personal Email</label>
-                            <input type="email"
-                                class="w-full h-12 px-4 rounded-lg border border-gray-300
-                                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                value="{{ $dosen->email ?? '@123' }}" />
+                            <label class="block font-semibold mb-1">Personal Email</label>
+                            <input name="personal_email" type="email"
+                                class="w-full h-11 rounded-lg border border-gray-300 px-3 focus:ring-2 focus:ring-blue-500"
+                                value="{{ old('personal_email', $profil->personal_email) }}" />
 
-                            <label class="block font-semibold mt-6 mb-2">Phone Number</label>
-                            <input type="text"
-                                class="w-full h-12 px-4 rounded-lg border border-gray-300
-                                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                value="{{ $dosen->phone ?? '12345' }}" />
+                            <label class="block font-semibold mt-5 mb-1">Phone Number</label>
+                            <input id="phoneInput" name="phone_number" type="text"
+                                class="w-full h-11 rounded-lg border border-gray-300 px-3 focus:ring-2 focus:ring-blue-500"
+                                value="{{ old('phone_number', $profil->phone_number) }}" inputmode="numeric"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="15" />
+
+
+                            {{-- 🔧 Spacer untuk menyamakan baris dengan "Departement" di kolom kiri --}}
+                            <div class="mt-5 hidden lg:block">
+                                <label class="block font-semibold mb-1 opacity-0 select-none">Spacer</label>
+                                <div class="h-11"></div>
+                            </div>
+
+                            {{-- ✅ Tombol sekarang sejajar dengan "Academic Advisor" di kiri --}}
+                            <div class="mt-14 flex xl:justify-end justify-end">
+                                <button type="submit"
+                                    class="px-48 h-11 rounded-xl bg-blue-600 text-white font-bold tracking-wide hover:brightness-110 active:brightness-95">
+                                    SUBMIT
+                                </button>
+                            </div>
                         </div>
-                    </div>
 
-                    {{-- Footer: Submit (dummy, reload halaman) --}}
-                    <div class="mt-10 flex justify-end">
-                        <button type="submit"
-                            class="px-10 h-12 rounded-xl bg-[#2F62F5] text-white font-extrabold tracking-wide
-                         hover:brightness-110 active:brightness-95">
-                            SUBMIT
-                        </button>
                     </div>
                 </form>
+
             </div>
         </div>
     </div>
     {{-- ===== /MODAL ===== --}}
+
+
+
+
+
+
 
     {{-- ===== Script modal (vanilla JS) – khusus modal ini ===== --}}
     <script>

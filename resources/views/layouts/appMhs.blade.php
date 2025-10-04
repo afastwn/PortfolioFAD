@@ -50,12 +50,16 @@
 
 <body class="relative min-h-screen overflow-x-hidden bg-[url('/BG.png')] bg-no-repeat bg-left-top bg-cover">
 
-    <!-- Logo -->
+    <!-- Logo = Logout -->
     <div class="absolute -top-12 left-6 z-20 flex flex-col items-start">
-        <a href="/login"> {{-- arahkan ke login, atau ganti sesuai route utama --}}
-            <img alt="Logo" src="/DWDP.png" class="w-[120px] h-[160px] object-contain mb-4 cursor-pointer" />
-        </a>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" title="Logout" class="cursor-pointer">
+                <img alt="Logo" src="/DWDP.png" class="w-[120px] h-[160px] object-contain mb-4" />
+            </button>
+        </form>
     </div>
+
 
     <!-- Sidebar -->
     <nav class="absolute top-0 left-0 min-h-screen w-48 bg-transparent flex flex-col pt-32 pb-8 px-4 space-y-2 text-xs">

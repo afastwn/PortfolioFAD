@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('schools', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->unique()->constrained()->cascadeOnDelete();
+            $table->string('school_origin')->nullable(); // School Origin
+            $table->string('city')->nullable();          // City
+            $table->string('regency')->nullable();       // Regency (Kabupaten)
+            $table->string('province')->nullable();      // Province
+            $table->string('level')->nullable();         // SMA / SMK
             $table->timestamps();
         });
     }

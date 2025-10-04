@@ -17,6 +17,10 @@ return new class extends Migration
             // khusus mahasiswa
             $table->string('nim', 20)->unique()->nullable();
 
+            // khusus dosen
+            $table->string('nip', 50)->nullable();   // contoh: 104E344
+            $table->string('nidn', 50)->nullable();  // contoh: 0525016601
+
             // identitas umum
             $table->string('name_asli', 100);         // nama lengkap
             $table->string('username', 50)->unique(); // alias/username

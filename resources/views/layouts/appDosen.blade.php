@@ -51,12 +51,16 @@
 
 <body class="relative min-h-screen overflow-x-hidden bg-[url('/BG.png')] bg-no-repeat bg-left-top bg-cover">
 
-    <!-- Logo -->
+    <!-- Logo = Logout -->
     <div class="absolute -top-12 left-6 z-20 flex flex-col items-start">
-        <a href="/login"> {{-- arahkan ke login, atau ganti sesuai route utama --}}
-            <img alt="Logo" src="/DWDP.png" class="w-[120px] h-[160px] object-contain mb-4 cursor-pointer" />
-        </a>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" title="Logout" class="cursor-pointer">
+                <img alt="Logo" src="/DWDP.png" class="w-[120px] h-[160px] object-contain mb-4" />
+            </button>
+        </form>
     </div>
+
 
 
     <!-- Sidebar -->
@@ -79,9 +83,9 @@
             <i class="fas fa-expand text-[#6b8a99] text-base"></i> View Portfolio
         </a>
 
-        <a href="{{ route('dosen.profile') }}"
+        <a href="{{ route('dosen.profile.show') }}"
             class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition
-              {{ request()->routeIs('dosen.profile') ? 'active-link' : '' }}">
+              {{ request()->routeIs('dosen.profile.show') ? 'active-link' : '' }}">
             <i class="fas fa-user text-[#6b8a99] text-base"></i> Profile
         </a>
     </nav>

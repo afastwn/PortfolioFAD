@@ -104,7 +104,7 @@
                         <div>
                             <input name="login" value="{{ old('login') }}"
                                 class="w-full rounded-lg py-3 px-4 text-sm placeholder-gray-400 shadow-md focus:outline-none focus:ring-2 focus:ring-sky-400"
-                                placeholder="NIM (Mahasiswa) / Email UKDW (Dosen)" type="text" required />
+                                placeholder="NIM (Mahasiswa) / Username (Dosen)" type="text" required />
                         </div>
 
                         <div>
@@ -116,10 +116,13 @@
                             </p>
                         </div>
 
-                        <div class="flex items-center gap-2">
-                            <input id="remember" name="remember" type="checkbox" class="h-4 w-4">
-                            <label for="remember" class="text-sm">Remember me</label>
+                        <div class="flex items-center justify-end">
+                            <a href="#"
+                                class="italic text-sm text-gray-600 hover:text-gray-800 transition-opacity duration-200 opacity-70 hover:opacity-100">
+                                Forgot password?
+                            </a>
                         </div>
+
 
                         <button
                             class="w-full bg-sky-400 hover:bg-sky-500 text-white font-bold py-3 rounded-lg shadow-md transition-colors"

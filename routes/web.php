@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\MhsProfileController;
+use App\Http\Controllers\ProfilDosenController;
 
 // =======================
 // Public (tanpa login)
@@ -11,6 +13,7 @@ Route::post('/login', [LoginController::class, 'store'])->name('login.store');
 Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
 
 Route::view('/aboutUS', 'aboutUS')->name('about');
+Route::view('/showGalery', 'showGalery')->name('showGalery');
 
 // (opsional) root → arahkan ke login / dashboard bila sudah login
 Route::get('/', function () {
@@ -27,7 +30,7 @@ Route::get('/', function () {
 // =======================
 // Protected (harus login)
 // =======================
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     // ---------- Mahasiswa ----------
     Route::middleware(['role:mahasiswa'])->prefix('mhs')->name('mhs.')->group(function () {
         Route::view('/dashboard', 'mhs.homeMhs')->name('dashboard');           // mhs.dashboard
@@ -78,7 +81,11 @@ Route::middleware(['auth'])->group(function () {
         })->name('edit')->where('id', '[0-9]+');
 
         Route::view('/all-works', 'mhs.allWorksMhs')->name('allworks');        // mhs.allworks
-        Route::view('/profile', 'mhs.profileMhs')->name('profile');            // mhs.profile
+        Route::get('/profile', [MhsProfileController::class, 'show'])->name('profile');           // mhs.profile
+        Route::post('/profile/save',       [MhsProfileController::class, 'saveProfile'])->name('profile.save');
+        Route::post('/profile/activities', [MhsProfileController::class, 'saveActivities'])->name('profile.activities');
+        Route::post('/profile/skills',     [MhsProfileController::class, 'saveSkills'])->name('profile.skills');
+        Route::post('/profile/school',     [MhsProfileController::class, 'saveSchool'])->name('profile.school');
         Route::view('/gallery', 'showGalery')->name('gallery');                // mhs.gallery
     });
 
@@ -86,7 +93,8 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:dosen'])->prefix('dosen')->name('dosen.')->group(function () {
         Route::view('/dashboard', 'dosen.dashboardDsn')->name('dashboard');    // dosen.dashboard
         Route::view('/v-portfolio', 'dosen.vPortfolio')->name('vportfolio');   // dosen.vportfolio
-        Route::view('/profile', 'dosen.profileDsn')->name('profile');          // dosen.profile
+        Route::get('/profile', [ProfilDosenController::class, 'show'])->name('profile.show');
+        Route::post('/profile', [ProfilDosenController::class, 'update'])->name('profile.update');
         Route::view('/student-profiling', 'dosen.studentProfiling')->name('studentProfiling'); // dosen.studentProfiling
 
         Route::get('/student-profiling/{id}', function ($id) {

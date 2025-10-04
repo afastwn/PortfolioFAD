@@ -12,10 +12,10 @@ class School extends Model
     protected $fillable = [
         'user_id',
         'school_origin',
-        'city_regency',
+        'city',
         'regency',
         'province',
-        'level', // SMA / SMK / (SMP)
+        'level', // SMA / SMK
     ];
 
     public function user() {

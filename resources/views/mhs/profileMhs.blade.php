@@ -18,7 +18,7 @@
 
             {{-- Kolom kiri: Profil (span 3 baris agar setinggi kolom kanan) --}}
             <section class="lg:row-span-3">
-                <div class="bg-white rounded-xl border shadow p-6 h-[805px] flex flex-col">
+                <div class="bg-white rounded-xl border shadow p-6 h-[680px] flex flex-col">
                     <h3 class="font-extrabold mb-4">PROFIL</h3>
 
                     {{-- Avatar --}}
@@ -28,49 +28,52 @@
                         </div>
                     </div>
 
-                    {{-- Detail --}}
+                    {{-- Detail Profile --}}
                     <dl class="text-sm">
-                        <div class="grid grid-cols-[120px,auto] py-2 border-b">
+                        <div class="grid grid-cols-[140px,auto] py-2 border-b">
                             <dt class="text-gray-500">STUDENT ID</dt>
-                            <dd>: 72220525</dd>
+                            <dd>: {{ $user->nim ?? '-' }}</dd>
                         </div>
-                        <div class="grid grid-cols-[120px,auto] py-2 border-b">
+                        <div class="grid grid-cols-[140px,auto] py-2 border-b">
                             <dt class="text-gray-500">FULL NAME</dt>
-                            <dd>: Filistera Santoso</dd>
+                            <dd>: {{ $user->name_asli ?? '-' }}</dd>
                         </div>
-                        <div class="grid grid-cols-[120px,auto] py-2 border-b">
+                        <div class="grid grid-cols-[140px,auto] py-2 border-b">
                             <dt class="text-gray-500">PHONE</dt>
-                            <dd>: 77777777</dd>
+                            <dd>: {{ $profile->phone ?? '-' }}</dd>
                         </div>
-                        <div class="grid grid-cols-[120px,auto] py-2 border-b">
+                        <div class="grid grid-cols-[140px,auto] py-2 border-b">
                             <dt class="text-gray-500">ADDRESS</dt>
-                            <dd>: Pati</dd>
+                            <dd>: {{ $profile->address ?? '-' }}</dd>
                         </div>
-                        <div class="grid grid-cols-[120px,auto] py-2 border-b">
+                        <div class="grid grid-cols-[140px,auto] py-2 border-b">
                             <dt class="text-gray-500">EMAIL</dt>
-                            <dd>: @l23</dd>
+                            <dd>: {{ $profile->email_pribadi ?? '-' }}</dd>
                         </div>
-                        <div class="grid grid-cols-[120px,auto] py-2">
+                        <div class="grid grid-cols-[140px,auto] py-2">
                             <dt class="text-gray-500">MOTIVATION</dt>
-                            <dd>: i want...</dd>
+                            <dd>: {{ $profile->motivation ?? '-' }}</dd>
                         </div>
                     </dl>
 
                     {{-- Tags --}}
-                    <div class="mt-4 pt-4 border-t flex gap-2 flex-wrap justify-center">
-                        <span class="px-7 py-1 text-sm font-semibold bg-blue-700 text-white">Good</span>
-                        <span class="px-7 py-1 text-sm font-semibold bg-blue-700 text-white">Smart</span>
-                        <span class="px-7 py-1 text-sm font-semibold bg-blue-700 text-white">Fast</span>
-                    </div>
-
+                    {{-- Tags (render only if exists) --}}
+                    @php $tags = is_array($profile->tags ?? null) ? $profile->tags : []; @endphp
+                    @if (count($tags))
+                        <div class="mt-4 pt-4 border-t flex gap-2 flex-wrap justify-center">
+                            @foreach ($tags as $t)
+                                <span
+                                    class="px-7 py-1 text-xs font-semibold bg-blue-700 text-white rounded">{{ $t }}</span>
+                            @endforeach
+                        </div>
+                    @endif
 
                     {{-- Tombol edit (tetap di bawah tag biru, bukan absolute) --}}
                     <div class="mt-4 flex justify-end">
-                        <button class="text-blue-600 hover:text-blue-800 transition" title="Edit profil"
-                            onclick="openModal('editModal')">
+                        <button class="text-blue-600 hover:text-blue-800" title="Edit profile"
+                            onclick="openModal('editProfileModal')">
                             <i class="fas fa-pen"></i>
                         </button>
-
                     </div>
                 </div>
             </section>
@@ -80,19 +83,18 @@
                 {{-- CAMPUS ACTIVITIES --}}
                 <div class="bg-white rounded-xl border shadow p-6">
                     <h3 class="font-extrabold mb-4">CAMPUS ACTIVITIES</h3>
-                    <ul class="space-y-1 text-sm">
-                        <li class="flex items-center gap-2"><i class="fas fa-check-square text-blue-600"></i> TEACHING
-                            ASSISTANT</li>
-                        <li class="flex items-center gap-2"><i class="fas fa-check-square text-blue-600"></i> LABORATORY
-                            VOLUNTEER</li>
-                        <li class="flex items-center gap-2"><i class="fas fa-check-square text-blue-600"></i> CAMPUS UNIT
-                            VOLUNTEER</li>
-                        <li class="flex items-center gap-2"><i class="fas fa-check-square text-blue-600"></i> CAMPUS EVENT
-                            COMMITTEE</li>
+                    <ul class="space-y-2 text-sm">
+                        @forelse ($activities as $a)
+                            <li class="flex items-center gap-2">
+                                <i class="far fa-check-square text-blue-600"></i>
+                                <span>{{ $a->activity }}</span>
+                            </li>
+                        @empty
+                            <li class="text-gray-500">No activities yet.</li>
+                        @endforelse
                     </ul>
                     <div class="mt-4 flex justify-end">
-                        <button class="text-blue-600 hover:text-blue-800 transition" title="Edit activities"
-                            onclick="openModal('editActivitiesModal')">
+                        <button class="text-blue-600 hover:text-blue-800" onclick="openModal('editActivitiesModal')">
                             <i class="fas fa-pen"></i>
                         </button>
                     </div>
@@ -101,37 +103,43 @@
                 {{-- SKILLS --}}
                 <div class="bg-white rounded-xl border shadow p-6">
                     <h3 class="font-extrabold mb-4">SKILLS</h3>
-                    <ul class="space-y-1 text-sm">
-                        <li class="flex items-center gap-2"><i class="fas fa-check-square text-blue-600"></i> ADOBE
-                            PHOTOSHOP</li>
-                        <li class="flex items-center gap-2"><i class="fas fa-check-square text-blue-600"></i> COREL DRAW
-                        </li>
-                        <li class="flex items-center gap-2"><i class="fas fa-check-square text-blue-600"></i> BLENDER</li>
-                        <li class="flex items-center gap-2"><i class="fas fa-check-square text-blue-600"></i> ILLUSTRATOR
-                        </li>
-                        <li class="flex items-center gap-2"><i class="fas fa-check-square text-blue-600"></i> AUTOCAD</li>
+                    <ul class="space-y-2 text-sm">
+                        @forelse ($skills as $s)
+                            <li class="flex items-center gap-2">
+                                <i class="far fa-check-square text-blue-600"></i>
+                                <span>{{ $s->skill }}</span>
+                            </li>
+                        @empty
+                            <li class="text-gray-500">No skills yet.</li>
+                        @endforelse
                     </ul>
                     <div class="mt-4 flex justify-end">
-                        <button class="text-blue-600 hover:text-blue-800" title="Edit skills"
-                            onclick="openModal('editSkillsModal')"><i class="fas fa-pen"></i></button>
+                        <button class="text-blue-600 hover:text-blue-800" onclick="openModal('editSkillsModal')">
+                            <i class="fas fa-pen"></i>
+                        </button>
                     </div>
                 </div>
+
 
                 {{-- SCHOOL --}}
                 <div class="bg-white rounded-xl border shadow p-6">
                     <h3 class="font-extrabold mb-4">SCHOOL</h3>
                     <div class="text-sm space-y-1">
-                        <div class="grid grid-cols-[120px,auto] py-2 border-b">
-                            <span class="text-gray-500">SCHOOL ORIGIN</span><span>: Pati</span>
+                        <div class="grid grid-cols-[140px,auto] py-2 border-b">
+                            <span class="text-gray-500">SCHOOL ORIGIN</span><span>:
+                                {{ $school->school_origin ?? '-' }}</span>
                         </div>
-                        <div class="grid grid-cols-[120px,auto] py-2 border-b">
-                            <span class="text-gray-500">ADDRESS</span><span>: Pati</span>
+                        <div class="grid grid-cols-[140px,auto] py-2 border-b">
+                            <span class="text-gray-500">CITY</span><span>: {{ $school->city ?? '-' }}</span>
                         </div>
-                        <div class="grid grid-cols-[120px,auto] py-2 border-b">
-                            <span class="text-gray-500">CITY/REGENCY</span><span>: Pati</span>
+                        <div class="grid grid-cols-[140px,auto] py-2 border-b">
+                            <span class="text-gray-500">REGENCY</span><span>: {{ $school->regency ?? '-' }}</span>
                         </div>
-                        <div class="grid grid-cols-[120px,auto] py-2">
-                            <span class="text-gray-500">MAJOR</span><span>: Sains</span>
+                        <div class="grid grid-cols-[140px,auto] py-2 border-b">
+                            <span class="text-gray-500">PROVINCE</span><span>: {{ $school->province ?? '-' }}</span>
+                        </div>
+                        <div class="grid grid-cols-[140px,auto] py-2">
+                            <span class="text-gray-500">LEVEL</span><span>: {{ $school->level ?? '-' }}</span>
                         </div>
                     </div>
                     <div class="mt-4 flex justify-end">
@@ -146,75 +154,97 @@
     </div>
 
     {{-- ===== MODAL EDIT PROFILE (overlay) ===== --}}
-    <div id="editModal" class="fixed inset-0 z-[100] hidden">
-        {{-- Backdrop --}}
-        <div class="absolute inset-0 bg-black/50" onclick="closeModal('editModal')"></div>
-
-        {{-- Wrapper flex untuk center --}}
+    <div id="editProfileModal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-black/50" onclick="closeModal('editProfileModal')"></div>
         <div class="absolute inset-0 flex items-center justify-center p-4">
-            {{-- Dialog --}}
-            <div class="w-full max-w-3xl  bg-white shadow-lg">
+            <div class="w-full max-w-5xl bg-white shadow-lg">
                 {{-- Header --}}
-                <div class="flex items-center justify-between px-5 py-3 border-b">
-                    <h3 class="text-lg font-extrabold tracking-wide">PROFILE</h3>
-                    <button class="p-1.5 rounded hover:bg-gray-100" onclick="closeModal('editModal')"
-                        aria-label="Close">✕</button>
+                <div class="flex items-center justify-between px-6 py-4 border-b">
+                    <h3 class="text-2xl font-extrabold">PROFILE</h3>
+                    <button class="p-1.5 rounded hover:bg-gray-100" onclick="closeModal('editProfileModal')">✕</button>
                 </div>
 
-                {{-- Body: form --}}
-                <form method="GET" action="/profileMhs" class="px-5 py-5">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {{-- Kolom kiri --}}
-                        <div class="space-y-4">
+                {{-- Body --}}
+                <form method="POST" action="{{ route('mhs.profile.save') }}" class="px-6 py-6">
+                    @csrf
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        {{-- LEFT COLUMN --}}
+                        <div class="space-y-5">
                             <div>
-                                <label class="block text-sm font-semibold mb-1">Student ID</label>
-                                <input type="text" class="w-full h-9 rounded-md border border-gray-300 px-2"
-                                    value="72220525">
+                                <label class="block text-base font-semibold mb-1">Student ID</label>
+                                <input type="text" readonly value="{{ $user->nim }}"
+                                    class="w-full h-11 rounded-lg border px-3 bg-gray-100">
                             </div>
+
                             <div>
-                                <label class="block text-sm font-semibold mb-1">Full Name</label>
-                                <input type="text" class="w-full h-9 rounded-md border border-gray-300 px-2"
-                                    value="Filistera Santoso">
+                                <label class="block text-base font-semibold mb-1">Full Name</label>
+                                <input type="text" readonly value="{{ $user->name_asli }}"
+                                    class="w-full h-11 rounded-lg border px-3 bg-gray-100">
                             </div>
+
                             <div>
-                                <label class="block text-sm font-semibold mb-1">Phone Number</label>
-                                <input type="text" class="w-full h-9 rounded-md border border-gray-300 px-2"
-                                    value="77777777">
+                                <label class="block text-base font-semibold mb-1">Phone Number</label>
+                                <input name="phone" value="{{ old('phone', $profile->phone) }}"
+                                    placeholder="e.g. 0812xxxxxxx" class="w-full h-11 rounded-lg border px-3"
+                                    inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                    maxlength="15">
                             </div>
+
                             <div>
-                                <label class="block text-sm font-semibold mb-1">Address</label>
-                                <input type="text" class="w-full h-9 rounded-md border border-gray-300 px-2"
-                                    value="Pati">
+                                <label class="block text-base font-semibold mb-1">Address</label>
+                                <input name="address" value="{{ old('address', $profile->address) }}"
+                                    placeholder="Street / District / City" class="w-full h-11 rounded-lg border px-3">
                             </div>
+
                             <div>
-                                <label class="block text-sm font-semibold mb-1">Personal Email</label>
-                                <input type="email" class="w-full h-9 rounded-md border border-gray-300 px-2"
-                                    value="@l23">
+                                <label class="block text-base font-semibold mb-1">Personal Email</label>
+                                <input type="email" name="email_pribadi"
+                                    value="{{ old('email_pribadi', $profile->email_pribadi) }}"
+                                    placeholder="yourname@email.com" class="w-full h-11 rounded-lg border px-3">
                             </div>
                         </div>
 
-                        {{-- Kolom kanan --}}
-                        <div class="space-y-4">
+                        {{-- RIGHT COLUMN --}}
+                        <div class="space-y-6">
                             <div>
-                                <h4 class="text-base font-bold">Motivation and Problem-Solving</h4>
-                                <p class="text-xs text-gray-500">Describe your motivation and how you solve problems</p>
-                                <textarea class="mt-2 w-full h-24 rounded-md border border-gray-300 px-2 resize-none"></textarea>
+                                <label class="block text-xl font-semibold mb-1">Motivation and Problem-Solving</label>
+                                <p class="text-sm text-gray-500 mb-2">
+                                    Describe your motivation and how you solve problems
+                                </p>
+                                <textarea name="motivation" class="w-full min-h-[170px] rounded-lg border px-3 py-2"
+                                    placeholder="Tell us about your motivation and how you approach problems...">{{ old('motivation', $profile->motivation) }}</textarea>
                             </div>
 
+                            {{-- Tags bebas (maksimal 3) --}}
+                            @php $tags = is_array(old('tags', $profile->tags ?? [])) ? old('tags', $profile->tags ?? []) : []; @endphp
                             <div>
-                                <h4 class="text-base font-bold mb-2">Describe Yourself in 3 Words</h4>
-                                <button type="button"
-                                    class="px-4 py-1.5 text-sm font-semibold text-blue-600 bg-cyan-100 rounded-md">
-                                    + Add
-                                </button>
+                                <label class="block text-xl font-semibold mb-2">Describe Yourself in 3 Words</label>
+
+                                <div id="tagsWrap" class="flex flex-wrap gap-2">
+                                    @foreach ($tags as $i => $t)
+                                        <div class="flex items-center gap-2 border rounded px-2 py-1">
+                                            <input name="tags[]" value="{{ $t }}" maxlength="20"
+                                                class="border-none focus:ring-0 p-0 text-sm w-32" />
+                                            <button type="button" class="text-gray-500 hover:text-red-600"
+                                                onclick="this.parentElement.remove(); updateTagBtn();">×</button>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <button type="button" id="addTagBtn"
+                                    class="mt-3 px-4 py-2 rounded-lg bg-blue-100 text-blue-600 font-semibold"
+                                    onclick="addTagInput()">+ Add</button>
+
+                                <p class="text-xs text-gray-500 mt-2">Max 3 items, each up to 20 characters.</p>
                             </div>
                         </div>
                     </div>
 
                     {{-- Submit --}}
-                    <div class="pt-6 flex justify-center">
-                        <button type="submit"
-                            class="w-48 h-10 rounded-md bg-blue-600 text-white font-bold hover:bg-blue-700">
+                    <div class="mt-8 flex justify-center">
+                        <button
+                            class="w-72 h-12 rounded-md bg-blue-600 text-white text-lg font-extrabold tracking-wide hover:bg-blue-700">
                             SUBMIT
                         </button>
                     </div>
@@ -223,6 +253,33 @@
         </div>
     </div>
     {{-- ===== /MODAL ===== --}}
+
+    {{-- Script untuk tambah/hapus tag (maks 3) --}}
+    <script>
+        function addTagInput() {
+            const wrap = document.getElementById('tagsWrap');
+            if (wrap.children.length >= 3) return;
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-2 border rounded px-2 py-1';
+            div.innerHTML = `
+      <input name="tags[]" maxlength="20"
+             class="border-none focus:ring-0 p-0 text-sm w-32" placeholder="Word">
+      <button type="button" class="text-gray-500 hover:text-red-600"
+              onclick="this.parentElement.remove(); updateTagBtn();">×</button>
+    `;
+            wrap.appendChild(div);
+            updateTagBtn();
+        }
+
+        function updateTagBtn() {
+            const wrap = document.getElementById('tagsWrap');
+            const btn = document.getElementById('addTagBtn');
+            btn.disabled = wrap.children.length >= 3;
+            btn.classList.toggle('opacity-50', btn.disabled);
+            btn.classList.toggle('cursor-not-allowed', btn.disabled);
+        }
+        document.addEventListener('DOMContentLoaded', updateTagBtn);
+    </script>
 
 
 
@@ -253,60 +310,64 @@
     {{-- ===== MODAL CAMPUS ACTIVITIES (kecil + center) ===== --}}
     <div id="editActivitiesModal" class="fixed inset-0 z-[100] hidden">
         <div class="absolute inset-0 bg-black/50" onclick="closeModal('editActivitiesModal')"></div>
-
         <div class="absolute inset-0 flex items-center justify-center p-4">
-            <div class="w-full max-w-sm rounded-xl bg-white shadow-lg">
-                <div class="flex items-center justify-between px-4 py-3 border-b">
-                    <h3 class="text-lg font-extrabold">CAMPUS ACTIVITIES</h3>
-                    <button class="p-1.5 rounded hover:bg-gray-100" onclick="closeModal('editActivitiesModal')"
-                        aria-label="Close">✕</button>
+            <div class="w-full max-w-sm rounded bg-white shadow-lg">
+                <div class="flex items-center justify-between px-6 py-4 border-b">
+                    <h3 class="text-2xl font-extrabold">CAMPUS ACTIVITIES</h3>
+                    <button class="p-1.5 rounded hover:bg-gray-100" onclick="closeModal('editActivitiesModal')">✕</button>
                 </div>
 
-                <form method="GET" action="/profileMhs" class="px-5 py-4 space-y-4">
-                    <label class="flex items-center gap-3 text-base">
-                        <input type="checkbox" name="activities[]" value="Teaching Assistant"
-                            class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" checked>
-                        <span>Teaching Assistant</span>
-                    </label>
+                <form method="POST" action="{{ route('mhs.profile.activities') }}" class="px-6 py-6">
+                    @csrf
+                    @php
+                        // Opsi bawaan
+                        $defaults = [
+                            'Teaching Assistant',
+                            'Laboratory Volunteer',
+                            'Campus Unit Volunteer',
+                            'Campus Event Committee',
+                            'Student Organization Member',
+                        ];
 
-                    <label class="flex items-center gap-3 text-base">
-                        <input type="checkbox" name="activities[]" value="Laboratory Volunteer"
-                            class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" checked>
-                        <span>Laboratory Volunteer</span>
-                    </label>
+                        // Data existing dari DB (Collection -> array)
+                        $actArr = ($activities ?? collect())->pluck('activity')->values()->all();
 
-                    <label class="flex items-center gap-3 text-base">
-                        <input type="checkbox" name="activities[]" value="Campus Unit Volunteer"
-                            class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                        <span>Campus Unit Volunteer</span>
-                    </label>
+                        // Pisahkan mana yang default (untuk dicentang) dan mana yang custom
+                        $checkedDefaults = array_intersect($actArr, $defaults);
+                        $customActs = array_values(array_diff($actArr, $defaults));
+                    @endphp
 
-                    <label class="flex items-center gap-3 text-base">
-                        <input type="checkbox" name="activities[]" value="Campus Event Committee"
-                            class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                        <span>Campus Event Committee</span>
-                    </label>
+                    {{-- Daftar default (checkbox saja) --}}
+                    <div class="space-y-4 text-lg">
+                        @foreach ($defaults as $label)
+                            <label class="flex items-center gap-3">
+                                <input type="checkbox" name="activities[]" value="{{ $label }}"
+                                    class="h-5 w-5 text-blue-600 focus:ring-blue-500"
+                                    {{ in_array($label, $checkedDefaults) ? 'checked' : '' }}>
+                                <span>{{ $label }}</span>
+                            </label>
+                        @endforeach
+                    </div>
 
-                    <label class="flex items-center gap-3 text-base">
-                        <input type="checkbox" name="activities[]" value="Student Organization Member"
-                            class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                        <span>Student Organization Member</span>
-                    </label>
+                    {{-- Custom rows yang sudah ada di DB --}}
+                    <div id="actsCustomWrap" class="mt-4 space-y-4 text-lg">
+                        @foreach ($customActs as $txt)
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" class="h-5 w-5 text-blue-600 focus:ring-blue-500 act-toggle"
+                                    checked>
+                                <input type="text" name="activities[]" value="{{ $txt }}" maxlength="50"
+                                    class="flex-1 h-10 rounded-lg border border-gray-300 px-3 text-base act-input">
+                            </div>
+                        @endforeach
+                    </div>
 
-                    {{-- Others (awal kosong). data-name dipakai JS untuk name field --}}
-                    <div id="othersListAct" class="space-y-2" data-name="activities[]"></div>
+                    {{-- Others / Add --}}
+                    <button type="button" class="mt-5 text-gray-500 underline underline-offset-4"
+                        onclick="addActivityRow()">Others / Add</button>
 
-                    {{-- Add more (tambah 1 baris checkbox+input tiap dicentang) --}}
-                    <label class="flex items-center gap-3 text-base">
-                        <input id="otherAdderAct" type="checkbox"
-                            class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            onclick="addOtherField('othersListAct','otherAdderAct')">
-                        <span class="underline underline-offset-4 text-gray-500">Others / Add</span>
-                    </label>
-
-                    <div class="pt-2 flex justify-center">
-                        <button type="submit"
-                            class="w-56 h-10 rounded-md bg-blue-600 text-white font-extrabold tracking-wide hover:bg-blue-700">
+                    <div class="mt-8 flex justify-center">
+                        <button
+                            class="w-64 h-11 rounded-md bg-blue-600 text-white font-extrabold tracking-wide hover:bg-blue-700">
                             SUBMIT
                         </button>
                     </div>
@@ -315,64 +376,92 @@
         </div>
     </div>
     {{-- ===== /MODAL ===== --}}
+    {{-- Script kecil --}}
+    <script>
+        function wireActRow(row) {
+            const cb = row.querySelector('.act-toggle');
+            const input = row.querySelector('.act-input');
+            const sync = () => {
+                input.disabled = !cb.checked;
+            };
+            cb.addEventListener('change', sync);
+            sync();
+        }
+
+        function addActivityRow() {
+            const wrap = document.getElementById('actsCustomWrap');
+            const row = document.createElement('div');
+            row.className = 'flex items-center gap-3 mt-4';
+            row.innerHTML = `
+      <input type="checkbox" class="h-5 w-5 text-blue-600 focus:ring-blue-500 act-toggle" checked>
+      <input type="text" name="activities[]" maxlength="50"
+             class="flex-1 h-10 rounded-lg border border-gray-300 px-3 text-base act-input"
+             placeholder="Type your activity">
+    `;
+            wrap.appendChild(row);
+            wireActRow(row);
+        }
+
+        // Wire existing custom rows on load
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('#actsCustomWrap > div').forEach(wireActRow);
+        });
+    </script>
 
 
     {{-- ===== MODAL SKILLS (kecil + center) ===== --}}
     <div id="editSkillsModal" class="fixed inset-0 z-[100] hidden">
         <div class="absolute inset-0 bg-black/50" onclick="closeModal('editSkillsModal')"></div>
-
         <div class="absolute inset-0 flex items-center justify-center p-4">
-            <div class="w-full max-w-sm rounded-xl bg-white shadow-lg">
-                <div class="flex items-center justify-between px-4 py-3 border-b">
-                    <h3 class="text-lg font-extrabold">SKILLS</h3>
-                    <button class="p-1.5 rounded hover:bg-gray-100" onclick="closeModal('editSkillsModal')"
-                        aria-label="Close">✕</button>
+            <div class="w-full max-w-sm rounded bg-white shadow-lg">
+                <div class="flex items-center justify-between px-6 py-4 border-b">
+                    <h3 class="text-2xl font-extrabold">SKILLS</h3>
+                    <button class="p-1.5 rounded hover:bg-gray-100" onclick="closeModal('editSkillsModal')">✕</button>
                 </div>
 
-                <form method="GET" action="/profileMhs" class="px-5 py-4 space-y-4">
-                    <label class="flex items-center gap-3 text-base">
-                        <input type="checkbox" name="skills[]" value="Adobe Photoshop"
-                            class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" checked>
-                        <span>Adobe Photoshop</span>
-                    </label>
+                <form method="POST" action="{{ route('mhs.profile.skills') }}" class="px-6 py-6">
+                    @csrf
+                    @php
+                        // Opsi default
+                        $skillDefaults = ['Adobe Photoshop', 'Corel Draw', 'Blender', 'AutoCAD', 'Adobe Illustrator'];
 
-                    <label class="flex items-center gap-3 text-base">
-                        <input type="checkbox" name="skills[]" value="Corel Draw"
-                            class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                        <span>Corel Draw</span>
-                    </label>
+                        // Data existing dari DB → pisahkan default vs custom
+                        $skillArr = ($skills ?? collect())->pluck('skill')->values()->all();
+                        $checkedDefaultSkills = array_intersect($skillArr, $skillDefaults);
+                        $customSkills = array_values(array_diff($skillArr, $skillDefaults));
+                    @endphp
 
-                    <label class="flex items-center gap-3 text-base">
-                        <input type="checkbox" name="skills[]" value="Blender"
-                            class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                        <span>Blender</span>
-                    </label>
+                    {{-- Checkbox default --}}
+                    <div class="space-y-4 text-lg">
+                        @foreach ($skillDefaults as $label)
+                            <label class="flex items-center gap-3">
+                                <input type="checkbox" name="skills[]" value="{{ $label }}"
+                                    class="h-5 w-5 text-blue-600 focus:ring-blue-500"
+                                    {{ in_array($label, $checkedDefaultSkills) ? 'checked' : '' }}>
+                                <span>{{ $label }}</span>
+                            </label>
+                        @endforeach
+                    </div>
 
-                    <label class="flex items-center gap-3 text-base">
-                        <input type="checkbox" name="skills[]" value="AdobeCAD"
-                            class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                        <span>AdobeCAD</span>
-                    </label>
+                    {{-- Rows custom yang sudah ada --}}
+                    <div id="skillsCustomWrap" class="mt-4 space-y-4 text-lg">
+                        @foreach ($customSkills as $txt)
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" class="h-5 w-5 text-blue-600 focus:ring-blue-500 skill-toggle"
+                                    checked>
+                                <input type="text" name="skills[]" value="{{ $txt }}" maxlength="40"
+                                    class="flex-1 h-10 rounded-lg border border-gray-300 px-3 text-base skill-input">
+                            </div>
+                        @endforeach
+                    </div>
 
-                    <label class="flex items-center gap-3 text-base">
-                        <input type="checkbox" name="skills[]" value="Adobe Illustrator"
-                            class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                        <span>Adobe Illustrator</span>
-                    </label>
+                    {{-- Others / Add --}}
+                    <button type="button" class="mt-5 text-gray-500 underline underline-offset-4"
+                        onclick="addSkillRow()">Others / Add</button>
 
-                    {{-- Others untuk skills --}}
-                    <div id="othersListSkills" class="space-y-2" data-name="skills[]"></div>
-
-                    <label class="flex items-center gap-3 text-base">
-                        <input id="otherAdderSkills" type="checkbox"
-                            class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            onclick="addOtherField('othersListSkills','otherAdderSkills')">
-                        <span class="underline underline-offset-4 text-gray-500">Others / Add</span>
-                    </label>
-
-                    <div class="pt-2 flex justify-center">
-                        <button type="submit"
-                            class="w-56 h-10 rounded-md bg-blue-600 text-white font-extrabold tracking-wide hover:bg-blue-700">
+                    <div class="mt-8 flex justify-center">
+                        <button
+                            class="w-64 h-11 rounded-md bg-blue-600 text-white font-extrabold tracking-wide hover:bg-blue-700">
                             SUBMIT
                         </button>
                     </div>
@@ -381,15 +470,43 @@
         </div>
     </div>
     {{-- ===== /MODAL ===== --}}
+    {{-- Script kecil (boleh ditaruh sekali di akhir halaman) --}}
+    <script>
+        function wireSkillRow(row) {
+            const cb = row.querySelector('.skill-toggle');
+            const input = row.querySelector('.skill-input');
+            const sync = () => {
+                input.disabled = !cb.checked;
+            };
+            cb.addEventListener('change', sync);
+            sync();
+        }
 
-    {{-- ===== MODAL SCHOOL (persegi panjang + center) ===== --}}
+        function addSkillRow() {
+            const wrap = document.getElementById('skillsCustomWrap');
+            const row = document.createElement('div');
+            row.className = 'flex items-center gap-3 mt-4';
+            row.innerHTML = `
+      <input type="checkbox" class="h-5 w-5 text-blue-600 focus:ring-blue-500 skill-toggle" checked>
+      <input type="text" name="skills[]" maxlength="40"
+             class="flex-1 h-10 rounded-lg border border-gray-300 px-3 text-base skill-input"
+             placeholder="Type your skill">
+    `;
+            wrap.appendChild(row);
+            wireSkillRow(row);
+        }
+
+        // Inisialisasi untuk rows custom yang sudah ada
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('#skillsCustomWrap > div').forEach(wireSkillRow);
+        });
+    </script>
+
+    {{-- ===== MODAL SCHOOL ===== --}}
     <div id="editSchoolModal" class="fixed inset-0 z-[100] hidden">
-        {{-- Backdrop --}}
         <div class="absolute inset-0 bg-black/50" onclick="closeModal('editSchoolModal')"></div>
 
-        {{-- Center wrapper --}}
         <div class="absolute inset-0 flex items-center justify-center p-4">
-            {{-- Dialog: persegi panjang --}}
             <div class="w-full max-w-3xl bg-white shadow-lg">
                 {{-- Header --}}
                 <div class="flex items-center justify-between px-6 py-4 border-b">
@@ -399,49 +516,51 @@
                 </div>
 
                 {{-- Body --}}
-                <form method="GET" action="/profileMhs" class="px-6 py-6">
+                <form method="POST" action="{{ route('mhs.profile.school') }}" class="px-6 py-6">
+                    @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {{-- Kolom kiri --}}
+                        {{-- Kiri --}}
                         <div class="space-y-5">
                             <div>
                                 <label class="block text-lg font-semibold mb-1">School Origin</label>
                                 <input type="text" name="school_origin"
+                                    value="{{ old('school_origin', $school->school_origin) }}"
                                     class="w-full h-10 rounded-lg border border-gray-300 px-3 text-sm focus:border-blue-500 focus:ring-blue-500">
                             </div>
 
                             <div>
                                 <label class="block text-lg font-semibold mb-1">Regency</label>
-                                <input type="text" name="regency"
+                                <input type="text" name="regency" value="{{ old('regency', $school->regency) }}"
                                     class="w-full h-10 rounded-lg border border-gray-300 px-3 text-sm focus:border-blue-500 focus:ring-blue-500">
                             </div>
 
                             <div>
                                 <label class="block text-lg font-semibold mb-1">Province</label>
-                                <input type="text" name="province"
+                                <input type="text" name="province" value="{{ old('province', $school->province) }}"
                                     class="w-full h-10 rounded-lg border border-gray-300 px-3 text-sm focus:border-blue-500 focus:ring-blue-500">
                             </div>
                         </div>
 
-                        {{-- Kolom kanan --}}
+                        {{-- Kanan --}}
                         <div class="space-y-5">
                             <div>
-                                <label class="block text-lg font-semibold mb-1">City/Regency</label>
-                                <input type="text" name="city"
+                                <label class="block text-lg font-semibold mb-1">City</label>
+                                <input type="text" name="city" value="{{ old('city', $school->city) }}"
                                     class="w-full h-10 rounded-lg border border-gray-300 px-3 text-sm focus:border-blue-500 focus:ring-blue-500">
                             </div>
 
-                            {{-- Level (pilih salah satu) --}}
+                            {{-- Level: pilih salah satu --}}
                             <div class="pt-1">
-
                                 <label class="flex items-center gap-3 text-base mb-2">
-                                    <input type="radio" name="school_level" value="SMA"
-                                        class="h-5 w-5 text-blue-600 focus:ring-blue-500" checked>
+                                    <input type="radio" name="level" value="SMA"
+                                        class="h-5 w-5 text-blue-600 focus:ring-blue-500"
+                                        {{ old('level', $school->level) === 'SMA' ? 'checked' : '' }}>
                                     <span>SMA</span>
                                 </label>
-
                                 <label class="flex items-center gap-3 text-base">
-                                    <input type="radio" name="school_level" value="SMK"
-                                        class="h-5 w-5 text-blue-600 focus:ring-blue-500">
+                                    <input type="radio" name="level" value="SMK"
+                                        class="h-5 w-5 text-blue-600 focus:ring-blue-500"
+                                        {{ old('level', $school->level) === 'SMK' ? 'checked' : '' }}>
                                     <span>SMK</span>
                                 </label>
                             </div>
@@ -460,6 +579,7 @@
         </div>
     </div>
     {{-- ===== /MODAL ===== --}}
+
 
 
 

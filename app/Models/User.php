@@ -13,7 +13,9 @@ class User extends Authenticatable
     public $timestamps = false; // 🔹 tidak pakai created_at & updated_at
 
     protected $fillable = [
-        'nim',
+        'nim',          // untuk mhs
+        'nip',          // untuk dosen
+        'nidn',         // untuk dosen
         'name_asli',
         'username',
         'email',
@@ -31,7 +33,9 @@ class User extends Authenticatable
     ];
 
     public function profile()         { return $this->hasOne(Profile::class); }
-    public function campusAct(){ return $this->hasMany(CampusAct::class); }
-    public function skills()          { return $this->hasMany(Skills::class); }
+    public function campusActs()       { return $this->hasMany(CampusAct::class); }
+    public function skillsMhs()          { return $this->hasMany(Skills::class); }
     public function school()          { return $this->hasOne(School::class); }
+    public function profilDosen()     { return $this->hasOne(ProfilDosen::class);}
+
 }
