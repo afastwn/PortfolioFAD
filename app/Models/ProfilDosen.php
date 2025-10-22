@@ -25,4 +25,13 @@ class ProfilDosen extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+        // Samakan interface dengan mahasiswa -> photo_url
+    public function getPhotoUrlAttribute(): string
+    {
+        if (!empty($this->avatar_path)) {
+            return asset('uploads/profiles/' . $this->avatar_path);
+        }
+        return asset('images/avatar-dsn.png'); // default dosen
+    }
 }

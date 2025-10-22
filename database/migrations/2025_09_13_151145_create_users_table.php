@@ -22,14 +22,14 @@ return new class extends Migration
             $table->string('nidn', 50)->nullable();  // contoh: 0525016601
 
             // identitas umum
-            $table->string('name_asli', 100);         // nama lengkap
-            $table->string('username', 50)->unique(); // alias/username
+            $table->string('name_asli', 100)->nullable();         // nama lengkap
+            $table->string('username', 50)->nullable()->unique(); // alias/username
 
             // email resmi UKDW
-            $table->string('email', 100)->unique();   // mahasiswa: nim@ukdw.ac.id, dosen: staff.ukdw.ac.id
+            $table->string('email', 100)->nullable()->unique();   // mahasiswa: nim@ukdw.ac.id, dosen: staff.ukdw.ac.id
 
             // role user
-            $table->enum('role', ['mahasiswa','dosen']);
+            $table->enum('role', ['mahasiswa','dosen','admin']);
 
             // autentikasi
             $table->string('password');

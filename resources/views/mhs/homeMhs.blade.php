@@ -20,14 +20,14 @@
                 <!-- Box Total -->
                 <div
                     class="bg-white border border-gray-200 rounded-xl flex flex-col items-center justify-center w-128 h-64 shadow hover:shadow-lg hover:scale-105 transition">
-                    <p class="text-3xl font-extrabold">14</p>
+                    <p class="text-3xl font-extrabold">{{ $TOTAL_TARGET ?? 8 }}</p>
                     <p class="font-medium mt-1">Total</p>
                 </div>
 
                 <!-- Box Published -->
                 <div
                     class="bg-white border border-gray-200 rounded-xl flex flex-col items-center justify-center w-128 h-64 shadow hover:shadow-lg hover:scale-105 transition">
-                    <p class="text-3xl font-extrabold">7</p>
+                    <p class="text-3xl font-extrabold">{{ $uploadedCount ?? 0 }}</p>
                     <p class="font-medium mt-1">Published</p>
                 </div>
             </div>
@@ -39,9 +39,9 @@
     <section class="mb-10">
         <h2 class="text-xl font-extrabold mb-3">Semester Progress</h2>
         <div class="w-full bg-gray-300 rounded-full h-6 overflow-hidden">
-            <div class="bg-gradient-to-r from-blue-500 to-blue-700 h-6 rounded-full" style="width: 60%;"></div>
+            <div class="bg-gradient-to-r from-blue-500 to-blue-700 h-6 rounded-full" style="width: {{ $progressPercent ?? 0 }}%;"></div>
         </div>
-        <p class="text-right font-semibold mt-1">60%</p>
+        <p class="text-right font-semibold mt-1">{{ number_format($progressPercent ?? 0, 1) }}%</p>
     </section>
 
     <!-- Notification -->

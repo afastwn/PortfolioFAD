@@ -23,37 +23,60 @@ class MhsProfileController extends Controller
 
     public function saveProfile(Request $request)
     {
-        $user = Auth::user();
+        $user = \Illuminate\Support\Facades\Auth::user();
 
-        $data = $request->validate([
-            'phone'         => 'nullable|string|max:50',
-            'address'       => 'nullable|string|max:255',
-            'email_pribadi' => 'nullable|email|max:255',
-            'motivation'    => 'nullable|string',
-            'tags'          => 'nullable|array|max:3',   // ← maksimal 3 item
-            'tags.*'        => 'string|max:20',          // ← tiap item max 20 char
+        // Validasi field profil + foto (opsional)
+        $validated = $request->validate([
+            'phone'          => ['nullable','string','max:30'],
+            'address'        => ['nullable','string','max:255'],
+            'email_pribadi'  => ['nullable','email','max:255'],
+            'motivation'     => ['nullable','string','max:2000'],
+            'tags'           => ['nullable','array'],
+            'tags.*'         => ['string','max:30'],
+            'photo'          => ['nullable','image','mimes:jpg,jpeg,png,webp','max:2048'], // 2MB
         ]);
 
-        // Normalisasi whitespace + buang kosong
-        $tags = collect($data['tags'] ?? [])
-                ->map(fn($t) => trim(preg_replace('/\s+/', ' ', $t)))
-                ->filter()
-                ->values()
-                ->all();
+        // Ambil/buat profile milik user
+        /** @var \App\Models\Profile $profile */
+        $profile = \App\Models\Profile::firstOrCreate(['user_id' => $user->id]);
 
-        Profile::updateOrCreate(
-            ['user_id' => $user->id],
-            [
-                'phone'         => $data['phone'] ?? null,
-                'address'       => $data['address'] ?? null,
-                'email_pribadi' => $data['email_pribadi'] ?? null,
-                'motivation'    => $data['motivation'] ?? null,
-                'tags'          => $tags,
-            ]
-        );
+        // Isi data non-file
+        $profile->fill([
+            'phone'          => $validated['phone']         ?? $profile->phone,
+            'address'        => $validated['address']       ?? $profile->address,
+            'email_pribadi'  => $validated['email_pribadi'] ?? $profile->email_pribadi,
+            'motivation'     => $validated['motivation']    ?? $profile->motivation,
+            'tags'           => $validated['tags']          ?? $profile->tags,
+        ]);
+
+        // Handle Upload Foto -> public/uploads/profiles
+        if ($request->hasFile('photo')) {
+            $dir = public_path('uploads/profiles');
+            if (!is_dir($dir)) {
+                @mkdir($dir, 0775, true);
+            }
+
+            // Hapus file lama jika ada
+            if (!empty($profile->getOriginal('photo'))) {
+                $old = public_path('uploads/profiles/' . $profile->getOriginal('photo'));
+                if (file_exists($old)) {
+                    @unlink($old);
+                }
+            }
+
+            $file = $request->file('photo');
+            $ext  = $file->getClientOriginalExtension();
+            $name = 'mhs_'.$user->id.'_'.\Illuminate\Support\Str::uuid().'.'.$ext;
+
+            $file->move($dir, $name);
+            $profile->photo = $name;
+        }
+
+        $profile->save();
 
         return back()->with('success', 'Profile saved.');
     }
+
 
 
     public function saveActivities(Request $request)

@@ -26,22 +26,12 @@
             <h3 class="text-xs sm:text-sm font-extrabold tracking-wide mb-4">ACTIVE STUDENTS</h3>
             <div class="flex flex-col items-center">
                 <canvas id="activeChart" width="180" height="180"></canvas>
-                <div class="mt-4 grid grid-cols-3 gap-4 text-center text-xs">
-                    <div>
-                        <div class="w-2 h-2 mx-auto rounded-full" style="background:#3b82f6"></div>
-                        <div class="mt-1 text-gray-600">2022</div>
-                    </div>
-                    <div>
-                        <div class="w-2 h-2 mx-auto rounded-full" style="background:#ef4444"></div>
-                        <div class="mt-1 text-gray-600">2023</div>
-                    </div>
-                    <div>
-                        <div class="w-2 h-2 mx-auto rounded-full" style="background:#10b981"></div>
-                        <div class="mt-1 text-gray-600">2024</div>
-                    </div>
-                </div>
+
+                {{-- Legend dinamis --}}
+                <div id="activeLegend" class="mt-4 flex flex-wrap justify-center gap-3 text-center text-xs"></div>
             </div>
         </div>
+
     </div>
 
     {{-- Row 2: Map --}}
@@ -55,7 +45,7 @@
                 {{-- 1) Simpan gambar peta 2D-mu sebagai /img/indo-2d.png --}}
                 <img src="/INDONESIA.png" alt="Indonesia 2D Map" class="w-full h-auto block select-none">
 
-                
+
             </div>
 
             <p class="mt-3 text-xs text-gray-500">
@@ -171,13 +161,20 @@
 
         // ---------- Active Students (Doughnut) ----------
         const activeCtx = document.getElementById('activeChart').getContext('2d');
+        const activeLabels = @json($activeCohortLabels ?? []);
+        const activeCounts = @json($activeCohortCounts ?? []);
+        const basePalette = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#14b8a6', '#eab308', '#22c55e',
+            '#06b6d4', '#a855f7'
+        ];
+        const activeColors = activeLabels.map((_, i) => basePalette[i % basePalette.length]);
+
         const activeChart = new Chart(activeCtx, {
             type: 'doughnut',
             data: {
-                labels: ['2022', '2023', '2024'],
+                labels: activeLabels.length ? activeLabels : ['No Data'],
                 datasets: [{
-                    data: [25, 55, 20], // dummy %
-                    backgroundColor: ['#3b82f6', '#ef4444', '#10b981'],
+                    data: activeCounts.length ? activeCounts : [1],
+                    backgroundColor: activeColors,
                     borderWidth: 0
                 }]
             },
@@ -189,11 +186,24 @@
                     },
                     tooltip: {
                         callbacks: {
-                            label: ctx => `${ctx.label}: ${ctx.raw}%`
+                            label: ctx => {
+                                const val = ctx.raw ?? 0;
+                                const suffix = val === 1 ? 'student' : 'students';
+                                return `${ctx.label}: ${val} ${suffix}`;
+                            }
                         }
                     }
                 }
             }
         });
+
+        // Legend dinamis & center otomatis
+        const legendEl = document.getElementById('activeLegend');
+        legendEl.innerHTML = activeLabels.map((label, i) => `
+        <div class="flex flex-col items-center w-12">
+            <div class="w-2 h-2 rounded-full" style="background:${activeColors[i]}"></div>
+            <div class="mt-1 text-gray-600">${label}</div>
+        </div>
+    `).join('');
     </script>
 @endsection

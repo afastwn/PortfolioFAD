@@ -11,65 +11,93 @@
     </header>
 
     <section>
-        <div class="grid grid-cols-3 gap-6">
-            <!-- Project 1 -->
-            <div
-                class="bg-white rounded-xl shadow hover:shadow-lg overflow-hidden relative transition-transform duration-200 hover:scale-[1.02] aspect-square flex flex-col p-5">
-                <img src="{{ asset('/G1.png') }}" alt="Project 1" class="w-full h-[78%] object-cover rounded-lg" loading="lazy">
-                <div class="p-3 flex flex-col flex-1">
-                    <h3 class="font-bold text-2xl">Project Title 1</h3>
-                    <p class="text-lg italic text-gray-500 mb-1">Course Name</p>
-                    <div class="flex justify-between items-center mt-auto">
-                        <p class="text-sm font-semibold">Semester 1</p>
-                        <div class="flex gap-2 text-blue-600">
-                            <a href="#" title="Preview"><i class="fas fa-eye cursor-pointer"></i></a>
-                            <a href="{{ route('mhs.edit', ['id' => 1]) }}" title="Edit"><i
-                                    class="fas fa-pencil-alt cursor-pointer"></i></a>
+        {{-- menerima: $semesters, $hasAny, $nextSemester --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            @foreach ($semesters as $box)
+                @php
+                    /** @var \App\Models\Project|null $p */
+                    $p = $box['project'];
+                    $s = $box['semester'];
+                    $exists = $box['exists'];
+                    $cover = $box['cover_url'];
+                @endphp
+
+                {{-- ======== TILE: ADD PROJECT (awal kosong) ======== --}}
+                @if (!$hasAny && $s === 1)
+                    <a href="{{ route('mhs.projects.create') }}"
+                        class="relative aspect-[4/3] bg-white rounded-2xl border-2 border-dashed flex flex-col items-center justify-center text-gray-600 hover:bg-gray-50">
+                        <span class="text-xl font-semibold mb-2">Add Project</span>
+                        <i class="fas fa-plus text-4xl"></i>
+
+                        {{-- label semester kiri-bawah --}}
+                        <span class="absolute left-4 bottom-3 text-xs text-gray-500">Semester
+                            {{ $s }}</span>
+                    </a>
+                    @continue
+                @endif
+
+                {{-- ======== TILE: PROJECT ADA ======== --}}
+                {{-- ======== TILE: PROJECT ADA ======== --}}
+                @if ($exists)
+                    <div class="relative bg-white rounded-2xl shadow overflow-hidden aspect-[4/3] flex flex-col">
+                        {{-- Area cover (mengisi tinggi tersisa) --}}
+                        <div class="flex-1 overflow-hidden">
+                            @if ($cover)
+                                <img src="{{ $cover }}" alt="Semester {{ $s }} cover"
+                                    class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                                    <i class="far fa-image text-4xl mb-2"></i>
+                                    <span>No Display Photo</span>
+                                </div>
+                            @endif
+                        </div>
+
+                        {{-- Info bawah (tinggi konsisten) --}}
+                        <div class="p-4">
+                            <h3 class="font-extrabold text-lg truncate">{{ $p->title }}</h3>
+                            <p class="text-sm text-gray-500 truncate">{{ $p->course ?: '—' }}</p>
+                            <div class="text-xs mt-2 text-gray-600">Semester {{ $s }}</div>
+                        </div>
+
+                        {{-- Aksi pojok kanan bawah --}}
+                        <div class="absolute right-3 bottom-3 flex gap-2">
+                            {{-- <a href="{{ route('mhs.projects.show', $p) }}"
+                                class="p-2 bg-white/90 rounded-full shadow hover:bg-white" title="View">
+                                <i class="far fa-eye"></i>
+                            </a> --}}
+                            <a href="{{ route('mhs.projects.edit', $p) }}"
+                                class="p-2 bg-white/90 rounded-full shadow hover:bg-white" title="Edit">
+                                <i class="far fa-edit"></i>
+                            </a>
                         </div>
                     </div>
-                </div>
-            </div>
+                @else
+                    @if ($hasAny && isset($nextSemester) && $s === $nextSemester)
+                        <a href="{{ route('mhs.projects.create') }}"
+                            class="relative aspect-[4/3] bg-white rounded-2xl border-2 border-dashed flex flex-col items-center justify-center text-gray-600 hover:bg-gray-50">
+                            <span class="text-xl font-semibold mb-2">Add Project</span>
+                            <i class="fas fa-plus text-4xl"></i>
 
-            <!-- Project 2 -->
-            <div
-                class="bg-white rounded-xl shadow hover:shadow-lg overflow-hidden relative transition-transform duration-200 hover:scale-[1.02] aspect-square flex flex-col p-5">
-                <img src="{{ asset('/G2.png') }}" alt="Project 2" class="w-full h-[78%] object-cover rounded-lg"
-                    loading="lazy">
-                <div class="p-3 flex flex-col flex-1">
-                    <h3 class="font-bold text-2xl">Project Title 2</h3>
-                    <p class="text-lg italic text-gray-500 mb-1">Course Name</p>
-                    <div class="flex justify-between items-center mt-auto">
-                        <p class="text-sm font-semibold">Semester 2</p>
-                        <div class="flex gap-2 text-blue-600">
-                            <a href="#" title="Preview"><i class="fas fa-eye cursor-pointer"></i></a>
-                            <a href="{{ route('mhs.edit', ['id' => 2]) }}" title="Edit"><i
-                                    class="fas fa-pencil-alt cursor-pointer"></i></a>
+                            {{-- label semester kiri-bawah --}}
+                            <span class="absolute left-4 bottom-3 text-xs text-gray-500">Semester
+                                {{ $s }}</span>
+                        </a>
+                    @else
+                        {{-- Locked card kamu tetap seperti sebelumnya --}}
+                        <div
+                            class="relative bg-white rounded-2xl shadow flex flex-col items-center justify-center aspect-[4/3] text-gray-400">
+                            <i class="fas fa-lock text-4xl mb-2"></i>
+                            <div class="font-semibold">Locked</div>
+                            <div class="text-sm italic">Complete Semester {{ max(1, $s - 1) }}</div>
+                            <span class="absolute left-4 bottom-3 text-xs text-gray-500">Semester
+                                {{ $s }}</span>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Add Project -->
-            <a href="{{ route('mhs.add') }}"
-                class="bg-white rounded-xl shadow hover:shadow-lg flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-transform duration-200 hover:scale-[1.02] aspect-square">
-                <div class="text-center">
-                    <span class="text-xl font-bold">Add Project</span>
-                    <div class="text-4xl font-bold mt-2">+</div>
-                    <p class="text-sm font-semibold mt-2">Semester 3</p>
-                </div>
-            </a>
-
-
-            <!-- Semester 4 - 8 -->
-            @for ($i = 4; $i <= 8; $i++)
-                <div
-                    class="bg-white rounded-xl shadow flex flex-col items-center justify-center text-gray-400 p-4 aspect-square">
-                    <i class="fas fa-lock text-3xl mb-2"></i>
-                    <span class="font-semibold">Locked</span>
-                    <p class="text-sm italic">Complete Semester {{ $i }}</p>
-                    <p class="text-sm font-semibold mt-2">Semester {{ $i }}</p>
-                </div>
-            @endfor
+                    @endif
+                @endif
+            @endforeach
         </div>
     </section>
+
 @endsection

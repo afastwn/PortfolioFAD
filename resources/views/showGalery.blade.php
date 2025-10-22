@@ -27,7 +27,7 @@
             <!-- HEADER TOP: Logo (kiri) & HELLO (kanan) -->
             <div class="px-6 sm:px-8 pt-6">
                 <div class="flex items-center justify-between">
-                    <img src="/DWDP.png" alt="Logo" class="h-16 w-auto object-contain">
+                    <a href="/login"><img src="/DWDP.png" alt="Logo" class="h-16 w-auto object-contain" ></a>
                     <div class="flex items-center gap-2">
                         <span class="text-4xl sm:text-5xl font-extrabold tracking-tight">HELLO!</span>
                         <span class="text-5xl sm:text-6xl">👋</span>
@@ -61,10 +61,12 @@
                 @endphp
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    @for ($i = 0; $i < 15; $i++)
-                        @php $image = $images[$i % count($images)]; @endphp
+                    @forelse ($projects as $project)
+                        @php
+                            $cover = $project->display_cover_url ?? asset('images/placeholder.png'); // sediakan placeholder.png di public/images
+                        @endphp
                         <figure class="bg-white p-4 shadow-sm" style="box-shadow: 2px 2px 6px #b8b8b8;">
-                            <img src="{{ asset($image) }}" alt="Project {{ $i + 1 }}"
+                            <img src="{{ $cover }}" alt="{{ $project->title }}"
                                 class="w-full aspect-square object-cover" loading="lazy">
                             <figcaption class="flex justify-center items-center space-x-6 mt-3 text-lg">
                                 <i class="fas fa-heart text-red-600 cursor-pointer hover:scale-110 transition"></i>
@@ -73,21 +75,23 @@
                                 <i class="fas fa-comment text-sky-500 cursor-pointer hover:scale-110 transition"></i>
                             </figcaption>
                         </figure>
-                    @endfor
+                    @empty
+                        <p class="col-span-full text-center text-gray-500">Belum ada proyek.</p>
+                    @endforelse
                 </div>
             </div>
             <!-- /GRID -->
         </div>
     </div>
     <!-- SIGN IN button (sementara) -->
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-6">
+    {{-- <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-6">
         <div class="flex justify-center">
             <a href="/login"
                 class="inline-flex items-center justify-center w-40 h-11 rounded-md bg-blue-600 text-white font-extrabold tracking-wide hover:bg-blue-700">
                 SIGN IN
             </a>
         </div>
-    </div>
+    </div> --}}
 
     <!-- /WRAPPER -->
     <footer class="mt-10 py-8 text-center text-xs text-gray-500">

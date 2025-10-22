@@ -39,7 +39,8 @@
             content: "";
             position: absolute;
             top: 0;
-            right: -48px;
+            left: 140px;
+            right: -200px;
             width: 100px;
             height: 100%;
             background: white;
@@ -61,30 +62,19 @@
     </div>
 
 
+
     <!-- Sidebar -->
     <nav class="absolute top-0 left-0 min-h-screen w-48 bg-transparent flex flex-col pt-32 pb-8 px-4 space-y-2 text-xs">
-        <a href="{{ route('mhs.dashboard') }}"
+        <a href="{{ route('admin.addStudents') }}"
             class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition
-              {{ request()->routeIs('mhs.dashboard') || request()->routeIs('mhs.home') ? 'active-link' : '' }}">
-            <i class="fas fa-th-large text-[#6b8a99] text-base"></i> Home
+              {{ request()->routeIs('admin.addStudents') ? 'active-link' : '' }}">
+            <i class="fas fa-th-large text-[#6b8a99] text-base"></i> Add Students
         </a>
 
-        <a href="{{ route('mhs.myworks') }}"
+        <a href="{{ route('admin.addDosen') }}"
             class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition
-              {{ request()->routeIs('mhs.myworks') || request()->routeIs('mhs.projects.create') || request()->routeIs('mhs.projects.edit') ? 'active-link' : '' }}">
-            <i class="fas fa-folder text-[#6b8a99] text-base"></i> My Works
-        </a>
-
-        <a href="{{ route('mhs.allworks') }}"
-            class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition
-              {{ request()->routeIs('mhs.allworks') ? 'active-link' : '' }}">
-            <i class="fas fa-expand text-[#6b8a99] text-base"></i> All Works
-        </a>
-
-        <a href="{{ route('mhs.profile') }}"
-            class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition
-              {{ request()->routeIs('mhs.profile') ? 'active-link' : '' }}">
-            <i class="fas fa-user text-[#6b8a99] text-base"></i> Profile
+              {{ request()->routeIs('admin.addDosen') || request()->routeIs('addDosen') ? 'active-link' : '' }}">
+            <i class="fas fa-folder text-[#6b8a99] text-base"></i> Add Dosen
         </a>
     </nav>
 

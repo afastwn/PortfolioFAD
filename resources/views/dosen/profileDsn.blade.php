@@ -19,11 +19,37 @@
 
         <div class="p-6 sm:p-8">
             {{-- Avatar (sesuai contohmu) --}}
-            <div class="w-full flex justify-center mb-6">
-                <div class="w-32 h-32 rounded-full bg-gray-100 border flex items-center justify-center">
-                    <i class="fas fa-user text-5xl text-gray-300"></i>
+            <form id="avatarFormDsn" method="POST" action="{{ route('dosen.profile.update') }}" enctype="multipart/form-data"
+                class="w-full flex justify-center mb-6">
+                @csrf
+                <input type="file" name="photo" id="dsnAvatarInput" accept="image/*" class="hidden"
+                    onchange="handleAvatarChange('dsn')">
+
+                <div class="relative group w-32 h-32 rounded-full border bg-gray-100 flex items-center justify-center overflow-hidden cursor-pointer hover:shadow-md transition"
+                    onclick="document.getElementById('dsnAvatarInput').click()" title="Click to change photo">
+
+                    <i id="dsnUserIcon" class="fas fa-user text-5xl text-gray-300 absolute z-10 pointer-events-none"
+                        style="{{ !empty(optional($user->profilDosen)->avatar_path) ? 'display:none;' : '' }}"></i>
+
+                    <img id="dsnAvatarImg" src="{{ optional($user->profilDosen)->photo_url ?? '' }}" alt="Foto Dosen"
+                        class="absolute inset-0 w-full h-full object-cover {{ empty(optional($user->profilDosen)->avatar_path) ? 'hidden' : '' }}" />
+
+                    <div
+                        class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-semibold select-none">
+                        
+                    </div>
+
+                    <div id="dsnAvatarSpinner"
+                        class="hidden absolute inset-0 bg-white/70 flex items-center justify-center rounded-full">
+                        <svg class="animate-spin h-6 w-6 text-gray-600" viewBox="0 0 24 24" fill="none">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                        </svg>
+                    </div>
                 </div>
-            </div>
+            </form>
+
 
             {{-- Grid data --}}
             <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-10">
@@ -197,6 +223,26 @@
 
         function escHandler(e) {
             if (e.key === 'Escape') closeModal('editModalDsn');
+        }
+    </script>
+
+    <script>
+        function handleAvatarChange(prefix) {
+            const input = document.getElementById(prefix + 'AvatarInput');
+            const img = document.getElementById(prefix + 'AvatarImg');
+            const icon = document.getElementById(prefix + 'UserIcon');
+            const spinner = document.getElementById(prefix + 'AvatarSpinner');
+            const form = document.getElementById('avatarForm' + prefix.charAt(0).toUpperCase() + prefix.slice(1));
+
+            const file = input.files && input.files[0];
+            if (!file) return;
+
+            img.src = URL.createObjectURL(file);
+            img.classList.remove('hidden');
+            icon.style.display = 'none';
+
+            spinner.classList.remove('hidden');
+            form.submit();
         }
     </script>
 @endsection

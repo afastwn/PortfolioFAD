@@ -16,38 +16,58 @@ class LoginController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        $login = trim(strtolower($request->input('login')));
-
+        $login = trim($request->input('login')); // jangan lowercase, biar NIP huruf besar tetap bisa
         $credentials = [];
 
-        // Jika input hanya angka → anggap mahasiswa (nim → email)
+        /**
+         * Login rules:
+         * 1. Jika semua angka -> mahasiswa (NIM)
+         * 2. Jika diawali huruf 'ADM' (atau username cocok di DB) -> admin
+         * 3. Jika campuran huruf/angka tanpa simbol -> dosen (NIP)
+         */
+
         if (preg_match('/^\d+$/', $login)) {
+            // Mahasiswa (NIM)
             $credentials = [
-                'email'    => $login.'@ukdw.ac.id',
+                'email'    => strtolower($login) . '@ukdw.ac.id',
+                'password' => $request->password,
+            ];
+        } elseif ($this->isAdminUser($login)) {
+            // Admin (username)
+            $credentials = [
+                'username' => $login,
                 'password' => $request->password,
             ];
         } else {
-            // Anggap dosen → pakai username
+            // Dosen (NIP)
             $credentials = [
-                'username' => $login,
+                'nip'      => $login,
                 'password' => $request->password,
             ];
         }
 
         if (!Auth::attempt($credentials, $request->boolean('remember'))) {
             throw ValidationException::withMessages([
-                'login' => 'NIM/Username atau password salah.',
+                'login' => 'NIM/NIP/Username atau password salah.',
             ]);
         }
 
         $request->session()->regenerate();
 
-        // redirect per role
         return match (auth()->user()->role) {
+            'admin'     => redirect()->route('admin.addStudents'),
             'dosen'     => redirect()->route('dosen.dashboard'),
             'mahasiswa' => redirect()->route('mhs.dashboard'),
             default     => redirect('/'),
         };
+    }
+
+    private function isAdminUser(string $login): bool
+    {
+        // Bisa pakai pola tertentu, atau cek langsung ke DB
+        return \App\Models\User::where('username', $login)
+            ->where('role', 'admin')
+            ->exists();
     }
 
     public function destroy(Request $request)

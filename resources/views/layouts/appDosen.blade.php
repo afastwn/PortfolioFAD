@@ -73,7 +73,7 @@
 
         <a href="{{ route('dosen.studentProfiling') }}"
             class="flex items-center gap-2 text-[#6b8a99] font-medium hover:bg-white rounded-r-xl px-3 py-2 transition
-              {{ request()->routeIs('dosen.studentProfiling*') || request()->routeIs('dosen.showProfile') ? 'active-link' : '' }}">
+              {{ request()->routeIs('dosen.studentProfiling*') || request()->routeIs('dosen.showProfile') || request()->routeIs('dosen.projects.view') ? 'active-link' : '' }}">
             <i class="fas fa-folder text-[#6b8a99] text-base"></i> Student Profiling
         </a>
 
@@ -89,8 +89,6 @@
             <i class="fas fa-user text-[#6b8a99] text-base"></i> Profile
         </a>
     </nav>
-
-
 
     <!-- Main Content -->
     <main class="ml-56 mr-8 mt-8 mb-8 p-8 pt-20 bg-white rounded-xl shadow">

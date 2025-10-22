@@ -16,6 +16,7 @@ class Profile extends Model
         'email_pribadi',
         'motivation',
         'tags',
+        'photo',
     ];
 
     protected $casts = [
@@ -24,5 +25,14 @@ class Profile extends Model
 
     public function user() {
         return $this->belongsTo(User::class);
+    }
+
+    // URL siap-pakai untuk <img>
+    public function getPhotoUrlAttribute(): string
+    {
+        if (!empty($this->photo)) {
+            return asset('uploads/profiles/' . $this->photo);
+        }
+        return asset('images/avatar-mhs.png'); // siapkan default
     }
 }
