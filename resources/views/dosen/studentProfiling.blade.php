@@ -5,31 +5,74 @@
 @section('content')
     <header class="flex items-center justify-between border-b border-gray-200 pb-4">
         <h2 class="text-base sm:text-lg font-semibold tracking-wide">STUDENTS PROFILING</h2>
-        <h1 class="text-5xl font-extrabold flex items-center gap-2">
-            HELLO! <span class="text-6xl">👋</span>
+        <h1 class="text-2xl font-extrabold flex items-center gap-2">
+            Hello, {{ explode(' ', Auth::user()->name_asli)[0] ?? 'User' }}! 👋
         </h1>
     </header>
 
-    <form method="GET" class="mt-5 mb-4 flex items-center justify-between">
+    {{-- Controls: Show entries (kiri) + Export & Search (kanan) --}}
+    <form method="GET" class="mt-5 mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        {{-- KIRI: Show entries --}}
         <div class="flex items-center gap-2 text-sm">
             <span>Show</span>
+
             <div class="relative">
                 <select name="size" onchange="this.form.submit()"
-                    class="appearance-none h-9 pl-3 pr-8 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    class="appearance-none cursor-pointer h-9 pl-3 pr-8 rounded-lg border border-gray-300 bg-white 
+                   focus:outline-none focus:ring-2 focus:ring-blue-500">
                     @foreach ([10, 25, 50, 100] as $opt)
                         <option value="{{ $opt }}" @selected(($pageSize ?? 10) == $opt)>{{ $opt }}</option>
                     @endforeach
                 </select>
-                <i class="fas fa-chevron-down absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-500"></i>
+
+                {{-- Icon panah custom --}}
+                <i
+                    class="fas fa-chevron-down pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 
+                  text-xs text-gray-500"></i>
             </div>
+
             <span>entries</span>
         </div>
 
-        <div class="relative">
-            <input name="q" value="{{ $q ?? '' }}" placeholder="Search name / NIM / category..."
-                class="w-64 h-10 rounded-xl border border-gray-300 pl-10 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+
+        {{-- KANAN: (khusus kaprodi) Filter angkatan + Export | (semua) Search --}}
+        <div class="flex items-center gap-3">
+            @if (Auth::user()->role === 'kaprodi')
+                {{-- Dropdown angkatan untuk LIST & EXPORT (submit otomatis) --}}
+                <div class="relative">
+                    <select name="cohort" onchange="this.form.submit()"
+                        class="h-10 pl-3 pr-8 rounded-xl border border-gray-300 bg-white cursor-pointer 
+               appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">All cohorts</option>
+                        @foreach ($cohorts ?? [] as $yr)
+                            <option value="{{ $yr }}" @selected(($selectedCohort ?? '') == $yr)>{{ $yr }}</option>
+                        @endforeach
+                    </select>
+
+                    {{-- Panah custom --}}
+                    <i
+                        class="fas fa-chevron-down pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-500"></i>
+                </div>
+
+
+                {{-- Export Template (XLSX) membawa cohort yang sedang dipilih --}}
+                <a href="{{ route('dosen.studentProfiling.export', array_merge(request()->all(), ['format' => 'xlsx'])) }}"
+                    class="h-10 px-5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 font-semibold flex items-center gap-2 transition">
+                    <i class="far fa-file-excel text-green-600"></i>
+                    Export Template
+                </a>
+            @endif
+
+            {{-- Search --}}
+            <div class="relative">
+                <input name="q" value="{{ $q ?? '' }}" placeholder="Search name / NIM / category..."
+                    class="w-64 h-10 rounded-xl border border-gray-300 pl-10 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            </div>
         </div>
+
+
+
     </form>
 
     <div class="bg-white rounded-2xl shadow overflow-hidden">
@@ -81,4 +124,27 @@
             <div>{{ $students->links() }}</div>
         </div>
     </div>
+
+    <script>
+        // Tutup dropdown kalau klik di luar area Export
+        document.addEventListener('click', (e) => {
+            const wrapper = document.getElementById('exportWrapper');
+            const menu = document.getElementById('exportMenu');
+            if (!wrapper || !menu) return;
+            if (!wrapper.contains(e.target)) menu.classList.add('hidden');
+        });
+    </script>
+
+    <script>
+        function exportWithCohort(e) {
+            e.preventDefault();
+            const cohort = document.getElementById('exportCohort')?.value || '';
+            const params = new URLSearchParams(@json(request()->except('cohort'))); // pastikan tidak bawa cohort dari URL
+            params.set('format', 'xlsx');
+            if (cohort) {
+                params.set('cohort', cohort);
+            }
+            window.location.href = "{{ route('dosen.studentProfiling.export') }}?" + params.toString();
+        }
+    </script>
 @endsection

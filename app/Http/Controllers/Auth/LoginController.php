@@ -6,9 +6,27 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use App\Models\Project;
 
 class LoginController extends Controller
 {
+    public function index()
+    {
+        // Ambil maksimal 7 project terbaru (bisa sesuaikan filter publik jika ada)
+        $projects = Project::query()
+            // ->where('is_public', true)     // aktifkan jika ada kolom visibilitas
+            // ->where('status', 'published') // aktifkan jika pakai status publikasi
+            ->with(['currentViewerInteraction']) // penting agar status like publik terbaca (via cookie anon)
+            ->select(['id', 'anonim_name', 'title', 'display_photos'])
+            ->latest('updated_at')
+            ->take(7)
+            ->get();
+
+        // Kirim data project ke view login.blade.php
+        return view('login', compact('projects'));
+    }
+
+
     public function store(Request $request)
     {
         $request->validate([
@@ -39,16 +57,16 @@ class LoginController extends Controller
                 'password' => $request->password,
             ];
         } else {
-            // Dosen (NIP)
+            // Dosen (NIK)
             $credentials = [
-                'nip'      => $login,
+                'nik'      => $login,
                 'password' => $request->password,
             ];
         }
 
         if (!Auth::attempt($credentials, $request->boolean('remember'))) {
             throw ValidationException::withMessages([
-                'login' => 'NIM/NIP/Username atau password salah.',
+                'login' => 'NIM/NIK/Username atau password salah.',
             ]);
         }
 
@@ -57,6 +75,7 @@ class LoginController extends Controller
         return match (auth()->user()->role) {
             'admin'     => redirect()->route('admin.addStudents'),
             'dosen'     => redirect()->route('dosen.dashboard'),
+            'kaprodi'     => redirect()->route('dosen.dashboard'),
             'mahasiswa' => redirect()->route('mhs.dashboard'),
             default     => redirect('/'),
         };

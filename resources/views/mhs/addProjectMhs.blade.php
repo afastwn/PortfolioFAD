@@ -11,8 +11,8 @@
 @section('content')
     <header class="flex justify-between items-center border-b border-gray-300 pb-3 mb-8">
         <h2 class="text-xl font-extrabold">My Works</h2>
-        <h1 class="text-5xl font-extrabold flex items-center gap-2">
-            HELLO! <span class="text-6xl">👋</span>
+        <h1 class="text-2xl font-extrabold flex items-center gap-2">
+            Hello, {{ explode(' ', Auth::user()->name_asli)[0] ?? 'User' }}! 👋
         </h1>
     </header>
 
@@ -229,7 +229,16 @@
                             @php $courseVal = old('course', $isEdit ? ($project->course ?? '') : ''); @endphp
                             <select name="course" class="w-full border rounded-lg p-2">
                                 <option value=""></option>
-                                @foreach (['Course 1', 'Course 2', 'Course 3', 'Course 4', 'Course 5', 'Course 6', 'Course 7', 'Course 8'] as $c)
+                                @foreach ([
+                                    'DS1014 - Desain Dasar 1',
+                                    'DS2054 - Desain Dasar 2',
+                                    'DS3105 - Desain Produk Eksplorasi',
+                                    'DS4155 - Desain Produk Kerajinan',
+                                    'DS5215 - Desain Produk Kewirausahaan',
+                                    'DS6275 - Desain Produk Inklusif',
+                                    'DS7315 - Praktik Desain Produk Industri',
+                                    'DS8346 - Tugas Akhir'
+                                    ] as $c)
                                     <option value="{{ $c }}" {{ $courseVal === $c ? 'selected' : '' }}>
                                         {{ $c }}</option>
                                 @endforeach

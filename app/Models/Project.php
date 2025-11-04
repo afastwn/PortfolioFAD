@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\ProjectInteraction;
 
 class Project extends Model
 {
@@ -89,5 +90,19 @@ class Project extends Model
     public function getVideoUrlsAttribute(): array
     {
         return $this->mapToUrls($this->videos); // akan convert path storage → asset('storage/...')
+    }
+
+    public function interactions()
+    {
+        return $this->hasMany(ProjectInteraction::class);
+    }
+
+    public function currentViewerInteraction()
+    {
+        if (auth()->check()) {
+            return $this->hasOne(ProjectInteraction::class)->where('user_id', auth()->id());
+        }
+        $anon = request()->cookie('anon_id');
+        return $this->hasOne(ProjectInteraction::class)->where('anon_key', $anon);
     }
 }

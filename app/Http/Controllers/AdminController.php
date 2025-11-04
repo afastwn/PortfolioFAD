@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;     // <- WAJIB
+use Illuminate\Support\Facades\Hash; 
 
 
 class AdminController extends Controller
@@ -20,8 +20,7 @@ class AdminController extends Controller
 
         User::create([
             'nim'       => $request->nim,
-            'nip'       => null,
-            'nidn'      => null,
+            'nik'       => null,
             'name_asli' => $request->name,
             'username'  => $request->nim, // boleh juga dibuat berbeda
             'email'     => $request->nim . '@ukdw.ac.id',
@@ -37,25 +36,21 @@ class AdminController extends Controller
         $validated = $request->validate([
             'name'     => 'required|string|max:100',
             // NIP: huruf & angka saja, wajib diisi, unik
-            'nip'      => ['required','string','max:50','unique:users,nip','regex:/^[A-Za-z0-9]+$/'],
-            // NIDN: angka saja, wajib diisi, unik (umumnya 10 digit)
-            'nidn'     => ['required','digits:10','unique:users,nidn'],
+            'nik'      => ['required','string','max:50','unique:users,nik','regex:/^[A-Za-z0-9]+$/'],
             'password' => ['required','string','min:6'],
+            'role'     => ['required','in:dosen,kaprodi'],
         ], [
-            'nip.required'    => 'NIP wajib diisi.',
-            'nip.regex'       => 'NIP hanya boleh berisi huruf dan angka.',
-            'nidn.required'   => 'NIDN wajib diisi.',
-            'nidn.digits'     => 'NIDN harus 10 digit angka.',
+            'nik.required'    => 'NIK must be filled in.',
+            'nik.regex'       => 'NIK may only contain letters and numbers.',
         ]);
 
         User::create([
             'nim'       => null,
-            'nip'       => $request->nip,
-            'nidn'      => $request->nidn,
+            'nik'       => $request->nik,
             'name_asli' => $request->name,
             'username'  => null,                   // sesuai permintaan: null dulu
             'email'     => null,                   // aman: null dulu (kolom harus nullable)
-            'role'      => 'dosen',
+            'role'      => $request->role,
             'password'  => Hash::make($request->password),
         ]);
 

@@ -6,8 +6,8 @@
     <!-- Header -->
     <header class="flex justify-between items-center border-b border-gray-300 pb-3 mb-8">
         <h2 class="text-xl font-extrabold">Profile</h2>
-        <h1 class="text-5xl font-extrabold flex items-center gap-2">
-            HELLO! <span class="text-6xl">👋</span>
+        <h1 class="text-2xl font-extrabold flex items-center gap-2">
+            Hello, {{ explode(' ', Auth::user()->name_asli)[0] ?? 'User' }}! 👋
         </h1>
     </header>
 
@@ -36,7 +36,7 @@
 
                     <div
                         class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-sm font-semibold select-none">
-                        
+
                     </div>
 
                     <div id="dsnAvatarSpinner"
@@ -58,8 +58,8 @@
                     <h3 class="font-semibold mb-4">Basic Description</h3>
                     <dl class="text-xs">
                         <div class="flex items-center gap-3 py-2 border-b border-gray-100">
-                            <dt class="w-44 text-gray-600">NIP/NIDN</dt>
-                            <dd class="flex-1">: {{ ($user->nip ?? '-') . ' / ' . ($user->nidn ?? '-') }}</dd>
+                            <dt class="w-44 text-gray-600">NIK</dt>
+                            <dd class="flex-1">: {{ $user->nik ?? '-' }}</dd>
                         </div>
                         <div class="flex items-center gap-3 py-2 border-b border-gray-100">
                             <dt class="w-44 text-gray-600">FULL NAME</dt>
@@ -67,12 +67,21 @@
                         </div>
                         <div class="flex items-center gap-3 py-2 border-b border-gray-100">
                             <dt class="w-44 text-gray-600">DEPARTMENT</dt>
-                            <dd class="flex-1">: {{ $profil->department ?? '-' }}</dd>
+                            @php
+                                $deptMap = [
+                                    'Desain Produk' => 'Product Design',
+                                    'Product Design' => 'Product Design',
+                                    'Arsitektur' => 'Architecture',
+                                    'Architecture' => 'Architecture',
+                                ];
+                                $deptDisplay = $deptMap[$profil->department ?? ''] ?? ($profil->department ?? '-');
+                            @endphp
+                            <dd class="flex-1">: {{ $deptDisplay }}</dd>
                         </div>
-                        <div class="flex items-center gap-3 py-2">
+                        {{-- <div class="flex items-center gap-3 py-2">
                             <dt class="w-44 text-gray-600">ACADEMIC ADVISOR</dt>
                             <dd class="flex-1">: {{ $profil->academic_advisor ?? '-' }}</dd>
-                        </div>
+                        </div> --}}
                     </dl>
                 </div>
 
@@ -125,36 +134,36 @@
                         <div>
                             <h3 class="text-xl font-extrabold mb-6">Basic Description</h3>
 
-                            {{-- NIP & NIDN sejajar --}}
-                            <div class="flex items-start gap-6">
-                                <div class="w-1/2">
-                                    <label class="block font-semibold mb-1">NIP</label>
-                                    <input name="nip" type="text" readonly
-                                        class="w-full h-11 rounded-lg border border-gray-300 px-3 bg-gray-100 text-gray-600 cursor-not-allowed"
-                                        value="{{ $user->nip ?? '-' }}" />
-                                </div>
-                                <div class="w-1/2">
-                                    <label class="block font-semibold mb-1">NIDN</label>
-                                    <input name="nidn" type="text" readonly
-                                        class="w-full h-11 rounded-lg border border-gray-300 px-3 bg-gray-100 text-gray-600 cursor-not-allowed"
-                                        value="{{ $user->nidn ?? '-' }}" />
-                                </div>
-                            </div>
+                            <label class="block font-semibold mb-1">NIK</label>
+                            <input name="nik" type="text" readonly
+                                class="w-full h-11 rounded-lg border border-gray-300 px-3 bg-gray-100 text-gray-600 cursor-not-allowed"
+                                value="{{ $user->nik ?? '-' }}" />
 
                             <label class="block font-semibold mt-6 mb-1">Full Name</label>
                             <input name="name_asli" type="text" readonly
                                 class="w-full h-11 rounded-lg border border-gray-300 px-3 bg-gray-100 text-gray-600 cursor-not-allowed"
                                 value="{{ $user->name_asli ?? '-' }}" />
 
-                            <label class="block font-semibold mt-5 mb-1">Department</label>
-                            <input name="department" type="text"
-                                class="w-full h-11 rounded-lg border border-gray-300 px-3 focus:ring-2 focus:ring-blue-500"
-                                value="{{ old('department', $profil->department) }}" />
+                            @php
+                                $deptNow = old('department', $profil->department);
+                                $options = ['Product Design', 'Architecture'];
+                            @endphp
 
-                            <label class="block font-semibold mt-5 mb-1">Academic Advisor</label>
-                            <input name="academic_advisor" type="text"
-                                class="w-full h-11 rounded-lg border border-gray-300 px-3 focus:ring-2 focus:ring-blue-500"
-                                value="{{ old('academic_advisor', $profil->academic_advisor) }}" />
+                            <label class="block font-semibold mt-5 mb-1">Department</label>
+                            <select name="department"
+                                class="w-full h-11 rounded-lg border border-gray-300 px-3 focus:ring-2 focus:ring-blue-500">
+                                <option value="">-- Select Department --</option>
+
+                                {{-- tampilkan nilai lama (current) jika belum ada di daftar --}}
+                                @if ($deptNow && !in_array($deptNow, $options))
+                                    <option value="{{ $deptNow }}" selected>(Current) {{ $deptNow }}</option>
+                                @endif
+
+                                @foreach ($options as $opt)
+                                    <option value="{{ $opt }}" {{ $deptNow === $opt ? 'selected' : '' }}>
+                                        {{ $opt }}</option>
+                                @endforeach
+                            </select>
                         </div>
 
                         {{-- KANAN --}}
@@ -171,6 +180,35 @@
                                 class="w-full h-11 rounded-lg border border-gray-300 px-3 focus:ring-2 focus:ring-blue-500"
                                 value="{{ old('phone_number', $profil->phone_number) }}" inputmode="numeric"
                                 oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="15" />
+                            <!-- CHANGE PASSWORD -->
+                            {{-- <div class="mt-8"> --}}
+                            <label class="block text-base font-semibold mt-6 mb-1">Change Password</label>
+
+                            <!-- Current Password -->
+                            <div class="relative mb-3">
+                                <input type="password" name="current_password" id="dsn_current_password"
+                                    placeholder="Current password (required if changing)" autocomplete="current-password"
+                                    class="w-full h-11 rounded-lg border border-gray-300 px-3 pr-10 focus:ring-2 focus:ring-blue-500" />
+                                <button type="button" onclick="togglePassword('dsn_current_password', this)"
+                                    class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+
+                            <!-- New Password -->
+                            <div class="relative">
+                                <input type="password" name="new_password" id="dsn_new_password"
+                                    placeholder="New password (leave blank to keep current)"
+                                    pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$"
+                                    title="Minimal 6 karakter dan harus mengandung huruf serta angka"
+                                    autocomplete="new-password"
+                                    class="w-full h-11 rounded-lg border border-gray-300 px-3 pr-10 focus:ring-2 focus:ring-blue-500" />
+                                <button type="button" onclick="togglePassword('dsn_new_password', this)"
+                                    class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            {{-- </div> --}}
 
 
                             {{-- 🔧 Spacer untuk menyamakan baris dengan "Departement" di kolom kiri --}}
@@ -180,7 +218,7 @@
                             </div>
 
                             {{-- ✅ Tombol sekarang sejajar dengan "Academic Advisor" di kiri --}}
-                            <div class="mt-14 flex xl:justify-end justify-end">
+                            <div class="mt-(-40) flex xl:justify-end justify-end">
                                 <button type="submit"
                                     class="px-48 h-11 rounded-xl bg-blue-600 text-white font-bold tracking-wide hover:brightness-110 active:brightness-95">
                                     SUBMIT
@@ -195,12 +233,6 @@
         </div>
     </div>
     {{-- ===== /MODAL ===== --}}
-
-
-
-
-
-
 
     {{-- ===== Script modal (vanilla JS) – khusus modal ini ===== --}}
     <script>
@@ -245,4 +277,19 @@
             form.submit();
         }
     </script>
+
+    <script>
+        function togglePassword(inputId, button) {
+            const input = document.getElementById(inputId);
+            const icon = button.querySelector("i");
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.replace("fa-eye", "fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.replace("fa-eye-slash", "fa-eye");
+            }
+        }
+    </script>
+
 @endsection

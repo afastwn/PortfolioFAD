@@ -21,4 +21,8 @@ class School extends Model
     public function user() {
         return $this->belongsTo(User::class);
     }
+
+    public function cityRef() {
+        return $this->belongsTo(City::class, 'city_id');
+    }
 }

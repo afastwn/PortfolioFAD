@@ -4,6 +4,8 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>@yield('title', 'Dashboard')</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -94,6 +96,7 @@
     <main class="ml-56 mr-8 mt-8 mb-8 p-8 pt-20 bg-white rounded-xl shadow">
         @yield('content')
     </main>
+    @stack('scripts')
 </body>
 
 </html>

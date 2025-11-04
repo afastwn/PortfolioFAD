@@ -8,14 +8,26 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PreventBackHistory
 {
-    public function handle(Request $request, Closure $next)
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function handle(Request $request, Closure $next): Response
     {
+        /** @var \Symfony\Component\HttpFoundation\Response $response */
         $response = $next($request);
 
-        return $response
-            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
-            ->header('Cache-Control', 'post-check=0, pre-check=0', false)
-            ->header('Pragma', 'no-cache')
-            ->header('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
+        // IMPORTANT: untuk semua tipe response (Illuminate\Response, BinaryFileResponse, StreamedResponse, dll.)
+        // gunakan headers->set(), BUKAN ->header()
+        $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        // argumen ke-3 = false agar tidak overwrite header Cache-Control sebelumnya (biar digabung)
+        $response->headers->set('Cache-Control', 'post-check=0, pre-check=0', false);
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
+
+        return $response;
     }
 }

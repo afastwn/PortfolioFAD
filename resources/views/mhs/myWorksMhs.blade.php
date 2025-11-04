@@ -5,8 +5,8 @@
 @section('content')
     <header class="flex justify-between items-center border-b border-gray-300 pb-3 mb-8">
         <h2 class="text-xl font-extrabold">My Works</h2>
-        <h1 class="text-5xl font-extrabold flex items-center gap-2">
-            HELLO! <span class="text-6xl">👋</span>
+        <h1 class="text-2xl font-extrabold flex items-center gap-2">
+            Hello, {{ explode(' ', Auth::user()->name_asli)[0] ?? 'User' }}! 👋
         </h1>
     </header>
 

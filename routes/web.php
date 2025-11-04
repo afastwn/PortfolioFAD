@@ -13,16 +13,24 @@ use App\Http\Controllers\MhsAllWorksController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\DosenVPortfController;
 use App\Http\Controllers\DosenDashboardController;
+use App\Http\Controllers\ProjectInteractionController;
+use App\Http\Controllers\LocationController;
+
 
 // =======================
 // Public (tanpa login)
 // =======================
-Route::view('/login', 'login')->name('login');
+Route::get('/login', [LoginController::class, 'index'])->name('login'); 
 Route::post('/login', [LoginController::class, 'store'])->name('login.store');
 Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
 
 Route::view('/aboutUS', 'aboutUS')->name('about');
 Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery');
+Route::post('/projects/{project}/like', [ProjectInteractionController::class, 'toggleLike'])
+    ->name('projects.like');
+
+Route::post('/projects/{project}/comments', [ProjectInteractionController::class, 'storeComments'])
+    ->name('projects.comments');
 
 
 
@@ -87,7 +95,7 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     });
 
     // ---------- Dosen ----------
-    Route::middleware(['role:dosen'])->prefix('dosen')->name('dosen.')->group(function () {
+    Route::middleware(['role:dosen,kaprodi'])->prefix('dosen')->name('dosen.')->group(function () {
         Route::get('/dashboard', [DosenDashboardController::class, 'index'])->name('dashboard');
         Route::get('/v-portfolio', [DosenVPortfController::class, 'index'])->name('vportfolio');
         Route::get('/profile', [ProfilDosenController::class, 'show'])->name('profile.show');
@@ -100,9 +108,20 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::get('/student-profiling/{user}', [StudentProfilingController::class, 'show'])
         ->whereNumber('user')
         ->name('showProfile');
+        // ✅ HANYA KAPRODI yang boleh export (URL tetap di bawah /dosen/)
+        Route::get('/student-profiling-export', [StudentProfilingController::class, 'export'])
+        ->middleware('role:kaprodi')
+        ->name('studentProfiling.export');
+
 
         Route::get('/projects/{project}', [ProjectViewController::class, 'show'])
         ->whereNumber('project')
         ->name('projects.view');
+    });
+
+    Route::prefix('loc')->group(function(){
+        Route::get('/provinces', [LocationController::class,'provinces'])->name('loc.provinces');
+        Route::get('/regencies', [LocationController::class,'regenciesByProvince'])->name('loc.regencies');
+        Route::get('/cities',    [LocationController::class,'citiesByProvince'])->name('loc.cities');
     });
 });

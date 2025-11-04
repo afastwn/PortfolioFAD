@@ -6,8 +6,8 @@
     {{-- Header --}}
     <header class="flex justify-between items-center border-b border-gray-300 pb-3 mb-8">
         <h2 class="text-xl font-extrabold">Profile</h2>
-        <h1 class="text-5xl font-extrabold flex items-center gap-2">
-            HELLO! <span class="text-6xl">👋</span>
+        <h1 class="text-2xl font-extrabold flex items-center gap-2">
+            Hello, {{ explode(' ', Auth::user()->name_asli)[0] ?? 'User' }}! 👋
         </h1>
     </header>
 
@@ -18,7 +18,7 @@
 
             {{-- Kolom kiri: Profil (span 3 baris agar setinggi kolom kanan) --}}
             <section class="lg:row-span-3">
-                <div class="bg-white rounded-xl border shadow p-6 h-[680px] flex flex-col">
+                <div class="bg-white rounded-xl border shadow p-6 h-full flex flex-col h-fit">
                     <h3 class="font-extrabold mb-4">PROFIL</h3>
 
                     {{-- Avatar klik = upload + auto-submit --}}
@@ -61,29 +61,30 @@
                     <dl class="text-sm">
                         <div class="grid grid-cols-[140px,auto] py-2 border-b">
                             <dt class="text-gray-500">STUDENT ID</dt>
-                            <dd>: {{ $user->nim ?? '-' }}</dd>
+                            <dd class="inline-block -ml-7">: {{ $user->nim ?? '-' }}</dd>
                         </div>
                         <div class="grid grid-cols-[140px,auto] py-2 border-b">
                             <dt class="text-gray-500">FULL NAME</dt>
-                            <dd>: {{ $user->name_asli ?? '-' }}</dd>
+                            <dd class="inline-block -ml-7">: {{ $user->name_asli ?? '-' }}</dd>
                         </div>
                         <div class="grid grid-cols-[140px,auto] py-2 border-b">
                             <dt class="text-gray-500">PHONE</dt>
-                            <dd>: {{ $profile->phone ?? '-' }}</dd>
+                            <dd class="inline-block -ml-7">: {{ $profile->phone ?? '-' }}</dd>
                         </div>
                         <div class="grid grid-cols-[140px,auto] py-2 border-b">
                             <dt class="text-gray-500">ADDRESS</dt>
-                            <dd>: {{ $profile->address ?? '-' }}</dd>
+                            <dd class="inline-block -ml-7">: {{ $profile->address ?? '-' }}</dd>
                         </div>
                         <div class="grid grid-cols-[140px,auto] py-2 border-b">
                             <dt class="text-gray-500">EMAIL</dt>
-                            <dd>: {{ $profile->email_pribadi ?? '-' }}</dd>
+                            <dd class="inline-block -ml-7">: {{ $profile->email_pribadi ?? '-' }}</dd>
                         </div>
                         <div class="grid grid-cols-[140px,auto] py-2">
                             <dt class="text-gray-500">MOTIVATION</dt>
-                            <dd>: {{ $profile->motivation ?? '-' }}</dd>
+                            <dd class="inline-block -ml-7">: {{ $profile->motivation ?? '-' }}</dd>
                         </div>
                     </dl>
+
 
                     {{-- Tags --}}
                     {{-- Tags (render only if exists) --}}
@@ -108,7 +109,7 @@
             </section>
 
             {{-- Kolom kanan --}}
-            <section class="space-y-6">
+            <section class="lg:row-span-3 space-y-6">
                 {{-- CAMPUS ACTIVITIES --}}
                 <div class="bg-white rounded-xl border shadow p-6">
                     <h3 class="font-extrabold mb-4">CAMPUS ACTIVITIES</h3>
@@ -159,13 +160,13 @@
                                 {{ $school->school_origin ?? '-' }}</span>
                         </div>
                         <div class="grid grid-cols-[140px,auto] py-2 border-b">
-                            <span class="text-gray-500">CITY</span><span>: {{ $school->city ?? '-' }}</span>
+                            <span class="text-gray-500">PROVINCE</span><span>: {{ $school->province ?? '-' }}</span>
                         </div>
                         <div class="grid grid-cols-[140px,auto] py-2 border-b">
                             <span class="text-gray-500">REGENCY</span><span>: {{ $school->regency ?? '-' }}</span>
                         </div>
                         <div class="grid grid-cols-[140px,auto] py-2 border-b">
-                            <span class="text-gray-500">PROVINCE</span><span>: {{ $school->province ?? '-' }}</span>
+                            <span class="text-gray-500">CITY</span><span>: {{ $school->city ?? '-' }}</span>
                         </div>
                         <div class="grid grid-cols-[140px,auto] py-2">
                             <span class="text-gray-500">LEVEL</span><span>: {{ $school->level ?? '-' }}</span>
@@ -185,16 +186,20 @@
     {{-- ===== MODAL EDIT PROFILE (overlay) ===== --}}
     <div id="editProfileModal" class="fixed inset-0 z-[100] hidden">
         <div class="absolute inset-0 bg-black/50" onclick="closeModal('editProfileModal')"></div>
-        <div class="absolute inset-0 flex items-center justify-center p-4">
-            <div class="w-full max-w-5xl bg-white shadow-lg">
+
+        {{-- Center wrapper --}}
+        <div class="absolute inset-0 flex items-center justify-center overflow-y-auto p-4">
+            <div
+                class="w-full max-w-5xl bg-white shadow-lg rounded-lg my-10 md:my-16 max-h-[90vh] overflow-y-auto border border-gray-200">
+
                 {{-- Header --}}
-                <div class="flex items-center justify-between px-6 py-4 border-b">
+                <div class="flex items-center justify-between px-6 py-4 border-b sticky top-0 bg-white z-10">
                     <h3 class="text-2xl font-extrabold">PROFILE</h3>
                     <button class="p-1.5 rounded hover:bg-gray-100" onclick="closeModal('editProfileModal')">✕</button>
                 </div>
 
                 {{-- Body --}}
-                <form method="POST" action="{{ route('mhs.profile.save') }}" class="px-6 py-6">
+                <form method="POST" action="{{ route('mhs.profile.save') }}" class="px-6 py-6 space-y-6">
                     @csrf
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -231,6 +236,37 @@
                                 <input type="email" name="email_pribadi"
                                     value="{{ old('email_pribadi', $profile->email_pribadi) }}"
                                     placeholder="yourname@email.com" class="w-full h-11 rounded-lg border px-3">
+                            </div>
+
+                            <!-- CHANGE PASSWORD -->
+                            <div>
+                                <label class="block text-base font-semibold mb-1">Change Password</label>
+
+                                <!-- Current Password -->
+                                <div class="relative mb-3">
+                                    <input type="password" name="current_password" id="current_password"
+                                        placeholder="Current password (required if changing)"
+                                        autocomplete="current-password"
+                                        class="w-full h-11 rounded-lg border border-gray-300 px-3 pr-10 focus:ring-2 focus:ring-blue-500" />
+                                    <button type="button" onclick="togglePassword('current_password', this)"
+                                        class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+
+                                <!-- New Password -->
+                                <div class="relative">
+                                    <input type="password" name="new_password" id="new_password"
+                                        placeholder="New password (leave blank to keep current)"
+                                        pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$"
+                                        title="Minimal 6 karakter dan harus mengandung huruf serta angka"
+                                        autocomplete="new-password"
+                                        class="w-full h-11 rounded-lg border border-gray-300 px-3 pr-10 focus:ring-2 focus:ring-blue-500" />
+                                    <button type="button" onclick="togglePassword('new_password', this)"
+                                        class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -283,6 +319,39 @@
     </div>
     {{-- ===== /MODAL ===== --}}
 
+    @if ($errors->has('current_password') || $errors->has('new_password'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Munculkan dialog
+                var msg =
+                    @json($errors->first('current_password') ?: $errors->first('new_password'));
+                alert(msg);
+
+                // Jika kamu pakai modal bernama 'editProfileModal', buka kembali
+                if (typeof openModal === 'function') {
+                    openModal('editProfileModal');
+                }
+            });
+        </script>
+    @endif
+    <script>
+        function togglePassword(inputId, button) {
+            const input = document.getElementById(inputId);
+            const icon = button.querySelector("i");
+
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
+    </script>
+
+
     {{-- Script untuk tambah/hapus tag (maks 3) --}}
     <script>
         function addTagInput() {
@@ -333,13 +402,16 @@
 
     {{-- ===== Script modal (vanilla JS) ===== --}}
     <script>
+        // gunakan penanda modal aktif
+        window.__currentModal = window.__currentModal || null;
+
         function openModal(id) {
             const el = document.getElementById(id);
             if (!el) return;
             el.classList.remove('hidden');
             document.body.classList.add('overflow-hidden');
-            // ESC to close
-            document.addEventListener('keydown', escHandler);
+            window.__currentModal = id; // simpan modal aktif
+            document.addEventListener('keydown', escHandler); // ESC to close
         }
 
         function closeModal(id) {
@@ -347,25 +419,39 @@
             if (!el) return;
             el.classList.add('hidden');
             document.body.classList.remove('overflow-hidden');
+            if (window.__currentModal === id) window.__currentModal = null;
             document.removeEventListener('keydown', escHandler);
         }
 
         function escHandler(e) {
-            if (e.key === 'Escape') closeModal('editModal');
+            // tutup modal yang sedang aktif
+            if (e.key === 'Escape' && window.__currentModal) {
+                closeModal(window.__currentModal);
+            }
         }
     </script>
 
-    {{-- ===== MODAL CAMPUS ACTIVITIES (kecil + center) ===== --}}
+    {{-- ===================== MODAL CAMPUS ACTIVITIES ===================== --}}
     <div id="editActivitiesModal" class="fixed inset-0 z-[100] hidden">
         <div class="absolute inset-0 bg-black/50" onclick="closeModal('editActivitiesModal')"></div>
         <div class="absolute inset-0 flex items-center justify-center p-4">
-            <div class="w-full max-w-sm rounded bg-white shadow-lg">
-                <div class="flex items-center justify-between px-6 py-4 border-b">
-                    <h3 class="text-2xl font-extrabold">CAMPUS ACTIVITIES</h3>
-                    <button class="p-1.5 rounded hover:bg-gray-100" onclick="closeModal('editActivitiesModal')">✕</button>
+            <!-- container modal: max height viewport, kolom, overflow hidden -->
+            <div
+                class="w-full max-w-sm max-h-[90vh] bg-white rounded-2xl shadow-lg
+            flex flex-col overflow-hidden min-h-0">
+
+
+                <!-- HEADER (tetap) -->
+                <div class="px-6 py-4 border-b bg-white sticky top-0 z-10">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-2xl font-extrabold">CAMPUS ACTIVITIES</h3>
+                        <button class="p-1.5 rounded hover:bg-gray-100"
+                            onclick="closeModal('editActivitiesModal')">✕</button>
+                    </div>
                 </div>
 
-                <form method="POST" action="{{ route('mhs.profile.activities') }}" class="px-6 py-6">
+                <form method="POST" action="{{ route('mhs.profile.activities') }}"
+                    class="flex-1 flex flex-col min-h-0">
                     @csrf
                     @php
                         // Opsi bawaan
@@ -380,50 +466,58 @@
                         // Data existing dari DB (Collection -> array)
                         $actArr = ($activities ?? collect())->pluck('activity')->values()->all();
 
-                        // Pisahkan mana yang default (untuk dicentang) dan mana yang custom
+                        // Pisahkan default yang perlu dicentang vs custom
                         $checkedDefaults = array_intersect($actArr, $defaults);
                         $customActs = array_values(array_diff($actArr, $defaults));
                     @endphp
 
-                    {{-- Daftar default (checkbox saja) --}}
-                    <div class="space-y-4 text-lg">
-                        @foreach ($defaults as $label)
-                            <label class="flex items-center gap-3">
-                                <input type="checkbox" name="activities[]" value="{{ $label }}"
-                                    class="h-5 w-5 text-blue-600 focus:ring-blue-500"
-                                    {{ in_array($label, $checkedDefaults) ? 'checked' : '' }}>
-                                <span>{{ $label }}</span>
-                            </label>
-                        @endforeach
+                    <!-- BODY (scroll) -->
+                    <div id="actsBody" class="px-6 py-6 space-y-4 overflow-y-auto flex-1 min-h-0">
+                        {{-- Daftar default (checkbox saja) --}}
+                        <div class="space-y-4 text-lg">
+                            @foreach ($defaults as $label)
+                                <label class="flex items-center gap-3">
+                                    <input type="checkbox" name="activities[]" value="{{ $label }}"
+                                        class="h-5 w-5 text-blue-600 focus:ring-blue-500"
+                                        {{ in_array($label, $checkedDefaults) ? 'checked' : '' }}>
+                                    <span>{{ $label }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+
+                        {{-- Custom rows yang sudah ada di DB --}}
+                        <div id="actsCustomWrap" class="space-y-4 text-lg">
+                            @foreach ($customActs as $txt)
+                                <div class="flex items-center gap-3">
+                                    <input type="checkbox" class="h-5 w-5 text-blue-600 focus:ring-blue-500 act-toggle"
+                                        checked>
+                                    <input type="text" name="activities[]" value="{{ $txt }}"
+                                        maxlength="50"
+                                        class="flex-1 h-10 rounded-lg border border-gray-300 px-3 text-base act-input">
+                                </div>
+                            @endforeach
+                        </div>
+
+                        {{-- Others / Add --}}
+                        <button type="button" class="mt-1 text-gray-500 underline underline-offset-4"
+                            onclick="addActivityRow()">Others / Add</button>
                     </div>
 
-                    {{-- Custom rows yang sudah ada di DB --}}
-                    <div id="actsCustomWrap" class="mt-4 space-y-4 text-lg">
-                        @foreach ($customActs as $txt)
-                            <div class="flex items-center gap-3">
-                                <input type="checkbox" class="h-5 w-5 text-blue-600 focus:ring-blue-500 act-toggle"
-                                    checked>
-                                <input type="text" name="activities[]" value="{{ $txt }}" maxlength="50"
-                                    class="flex-1 h-10 rounded-lg border border-gray-300 px-3 text-base act-input">
-                            </div>
-                        @endforeach
-                    </div>
-
-                    {{-- Others / Add --}}
-                    <button type="button" class="mt-5 text-gray-500 underline underline-offset-4"
-                        onclick="addActivityRow()">Others / Add</button>
-
-                    <div class="mt-8 flex justify-center">
-                        <button
-                            class="w-64 h-11 rounded-md bg-blue-600 text-white font-extrabold tracking-wide hover:bg-blue-700">
-                            SUBMIT
-                        </button>
+                    <!-- FOOTER (tetap) -->
+                    <div class="px-6 py-4 border-t bg-white sticky bottom-0 z-10">
+                        <div class="flex justify-center">
+                            <button
+                                class="w-64 h-11 rounded-md bg-blue-600 text-white font-extrabold tracking-wide hover:bg-blue-700">
+                                SUBMIT
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    {{-- ===== /MODAL ===== --}}
+    {{-- ===================== /MODAL CAMPUS ACTIVITIES ===================== --}}
+
     {{-- Script kecil --}}
     <script>
         function wireActRow(row) {
@@ -441,13 +535,20 @@
             const row = document.createElement('div');
             row.className = 'flex items-center gap-3 mt-4';
             row.innerHTML = `
-      <input type="checkbox" class="h-5 w-5 text-blue-600 focus:ring-blue-500 act-toggle" checked>
-      <input type="text" name="activities[]" maxlength="50"
-             class="flex-1 h-10 rounded-lg border border-gray-300 px-3 text-base act-input"
-             placeholder="Type your activity">
-    `;
+  <input type="checkbox" class="h-5 w-5 text-blue-600 focus:ring-blue-500 act-toggle" checked>
+  <input type="text" name="activities[]" maxlength="50"
+         class="flex-1 h-10 rounded-lg border border-gray-300 px-3 text-base act-input"
+         placeholder="Type your activity">
+`;
             wrap.appendChild(row);
             wireActRow(row);
+
+            // auto scroll ke bawah agar field baru terlihat
+            const body = document.getElementById('actsBody');
+            if (body) body.scrollTo({
+                top: body.scrollHeight,
+                behavior: 'smooth'
+            });
         }
 
         // Wire existing custom rows on load
@@ -457,17 +558,24 @@
     </script>
 
 
-    {{-- ===== MODAL SKILLS (kecil + center) ===== --}}
+    {{-- ===================== MODAL SKILLS ===================== --}}
     <div id="editSkillsModal" class="fixed inset-0 z-[100] hidden">
         <div class="absolute inset-0 bg-black/50" onclick="closeModal('editSkillsModal')"></div>
         <div class="absolute inset-0 flex items-center justify-center p-4">
-            <div class="w-full max-w-sm rounded bg-white shadow-lg">
-                <div class="flex items-center justify-between px-6 py-4 border-b">
-                    <h3 class="text-2xl font-extrabold">SKILLS</h3>
-                    <button class="p-1.5 rounded hover:bg-gray-100" onclick="closeModal('editSkillsModal')">✕</button>
+            <!-- container modal: max height viewport, kolom, overflow hidden -->
+            <div
+                class="w-full max-w-sm max-h-[90vh] bg-white rounded-2xl shadow-lg
+            flex flex-col overflow-hidden min-h-0">
+
+                <!-- HEADER (tetap) -->
+                <div class="px-6 py-4 border-b bg-white sticky top-0 z-10">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-2xl font-extrabold">SKILLS</h3>
+                        <button class="p-1.5 rounded hover:bg-gray-100" onclick="closeModal('editSkillsModal')">✕</button>
+                    </div>
                 </div>
 
-                <form method="POST" action="{{ route('mhs.profile.skills') }}" class="px-6 py-6">
+                <form method="POST" action="{{ route('mhs.profile.skills') }}" class="flex-1 flex flex-col min-h-0">
                     @csrf
                     @php
                         // Opsi default
@@ -479,45 +587,52 @@
                         $customSkills = array_values(array_diff($skillArr, $skillDefaults));
                     @endphp
 
-                    {{-- Checkbox default --}}
-                    <div class="space-y-4 text-lg">
-                        @foreach ($skillDefaults as $label)
-                            <label class="flex items-center gap-3">
-                                <input type="checkbox" name="skills[]" value="{{ $label }}"
-                                    class="h-5 w-5 text-blue-600 focus:ring-blue-500"
-                                    {{ in_array($label, $checkedDefaultSkills) ? 'checked' : '' }}>
-                                <span>{{ $label }}</span>
-                            </label>
-                        @endforeach
+                    <!-- BODY (scroll) -->
+                    <div id="skillsBody" class="px-6 py-6 space-y-4 overflow-y-auto flex-1 min-h-0">
+                        {{-- Checkbox default --}}
+                        <div class="space-y-4 text-lg">
+                            @foreach ($skillDefaults as $label)
+                                <label class="flex items-center gap-3">
+                                    <input type="checkbox" name="skills[]" value="{{ $label }}"
+                                        class="h-5 w-5 text-blue-600 focus:ring-blue-500"
+                                        {{ in_array($label, $checkedDefaultSkills) ? 'checked' : '' }}>
+                                    <span>{{ $label }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+
+                        {{-- Rows custom yang sudah ada --}}
+                        <div id="skillsCustomWrap" class="space-y-4 text-lg">
+                            @foreach ($customSkills as $txt)
+                                <div class="flex items-center gap-3">
+                                    <input type="checkbox" class="h-5 w-5 text-blue-600 focus:ring-blue-500 skill-toggle"
+                                        checked>
+                                    <input type="text" name="skills[]" value="{{ $txt }}" maxlength="40"
+                                        class="flex-1 h-10 rounded-lg border border-gray-300 px-3 text-base skill-input">
+                                </div>
+                            @endforeach
+                        </div>
+
+                        {{-- Others / Add --}}
+                        <button type="button" class="mt-1 text-gray-500 underline underline-offset-4"
+                            onclick="addSkillRow()">Others / Add</button>
                     </div>
 
-                    {{-- Rows custom yang sudah ada --}}
-                    <div id="skillsCustomWrap" class="mt-4 space-y-4 text-lg">
-                        @foreach ($customSkills as $txt)
-                            <div class="flex items-center gap-3">
-                                <input type="checkbox" class="h-5 w-5 text-blue-600 focus:ring-blue-500 skill-toggle"
-                                    checked>
-                                <input type="text" name="skills[]" value="{{ $txt }}" maxlength="40"
-                                    class="flex-1 h-10 rounded-lg border border-gray-300 px-3 text-base skill-input">
-                            </div>
-                        @endforeach
-                    </div>
-
-                    {{-- Others / Add --}}
-                    <button type="button" class="mt-5 text-gray-500 underline underline-offset-4"
-                        onclick="addSkillRow()">Others / Add</button>
-
-                    <div class="mt-8 flex justify-center">
-                        <button
-                            class="w-64 h-11 rounded-md bg-blue-600 text-white font-extrabold tracking-wide hover:bg-blue-700">
-                            SUBMIT
-                        </button>
+                    <!-- FOOTER (tetap) -->
+                    <div class="px-6 py-4 border-t bg-white sticky bottom-0 z-10">
+                        <div class="flex justify-center">
+                            <button
+                                class="w-64 h-11 rounded-md bg-blue-600 text-white font-extrabold tracking-wide hover:bg-blue-700">
+                                SUBMIT
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    {{-- ===== /MODAL ===== --}}
+    {{-- ===================== /MODAL SKILLS ===================== --}}
+
     {{-- Script kecil (boleh ditaruh sekali di akhir halaman) --}}
     <script>
         function wireSkillRow(row) {
@@ -535,13 +650,20 @@
             const row = document.createElement('div');
             row.className = 'flex items-center gap-3 mt-4';
             row.innerHTML = `
-      <input type="checkbox" class="h-5 w-5 text-blue-600 focus:ring-blue-500 skill-toggle" checked>
-      <input type="text" name="skills[]" maxlength="40"
-             class="flex-1 h-10 rounded-lg border border-gray-300 px-3 text-base skill-input"
-             placeholder="Type your skill">
-    `;
+  <input type="checkbox" class="h-5 w-5 text-blue-600 focus:ring-blue-500 skill-toggle" checked>
+  <input type="text" name="skills[]" maxlength="40"
+         class="flex-1 h-10 rounded-lg border border-gray-300 px-3 text-base skill-input"
+         placeholder="Type your skill">
+`;
             wrap.appendChild(row);
             wireSkillRow(row);
+
+            // auto scroll ke bawah agar field baru terlihat
+            const body = document.getElementById('skillsBody');
+            if (body) body.scrollTo({
+                top: body.scrollHeight,
+                behavior: 'smooth'
+            });
         }
 
         // Inisialisasi untuk rows custom yang sudah ada
@@ -576,25 +698,35 @@
                                     class="w-full h-10 rounded-lg border border-gray-300 px-3 text-sm focus:border-blue-500 focus:ring-blue-500">
                             </div>
 
-                            <div>
-                                <label class="block text-lg font-semibold mb-1">Regency</label>
-                                <input type="text" name="regency" value="{{ old('regency', $school->regency) }}"
-                                    class="w-full h-10 rounded-lg border border-gray-300 px-3 text-sm focus:border-blue-500 focus:ring-blue-500">
-                            </div>
-
+                            {{-- Province --}}
                             <div>
                                 <label class="block text-lg font-semibold mb-1">Province</label>
-                                <input type="text" name="province" value="{{ old('province', $school->province) }}"
-                                    class="w-full h-10 rounded-lg border border-gray-300 px-3 text-sm focus:border-blue-500 focus:ring-blue-500">
+                                <select id="provinceSel" name="province_id"
+                                    class="w-full h-10 rounded-lg border border-gray-300 px-3 text-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required>
+                                    <option value="">-- Select Province --</option>
+                                </select>
+                            </div>
+
+                            {{-- Regency (Kabupaten) --}}
+                            <div>
+                                <label class="block text-lg font-semibold mb-1">Regency</label>
+                                <select id="regencySel" name="regency_id"
+                                    class="w-full h-10 rounded-lg border border-gray-300 px-3 text-sm focus:border-blue-500 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed">
+                                    <option value="">-- Select Regency --</option>
+                                </select>
                             </div>
                         </div>
 
                         {{-- Kanan --}}
                         <div class="space-y-5">
+                            {{-- City (Kota) --}}
                             <div>
                                 <label class="block text-lg font-semibold mb-1">City</label>
-                                <input type="text" name="city" value="{{ old('city', $school->city) }}"
-                                    class="w-full h-10 rounded-lg border border-gray-300 px-3 text-sm focus:border-blue-500 focus:ring-blue-500">
+                                <select id="citySel" name="city_id"
+                                    class="w-full h-10 rounded-lg border border-gray-300 px-3 text-sm focus:border-blue-500 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed">
+                                    <option value="">-- Select City --</option>
+                                </select>
                             </div>
 
                             {{-- Level: pilih salah satu --}}
@@ -628,13 +760,115 @@
     </div>
     {{-- ===== /MODAL ===== --}}
 
+    <script>
+        (async function() {
+            const provSel = document.getElementById('provinceSel');
+            const regSel = document.getElementById('regencySel');
+            const citySel = document.getElementById('citySel');
 
+            // Prefill (jika user sudah punya data)
+            const PREV = {
+                province: @json(old('province', $school->province ?? null)),
+                regencyId: @json($school->cityRef && $school->cityRef->type === 'KAB' ? $school->cityRef->id : null),
+                cityId: @json($school->cityRef && $school->cityRef->type === 'KOTA' ? $school->cityRef->id : null),
+                provinceIdGuess: null,
+            };
+
+            // Helper: enable/disable + clear lawannya saat dipilih
+            function syncMutualDisable() {
+                const regPicked = regSel.value !== '';
+                const cityPicked = citySel.value !== '';
+
+                if (regPicked && !regSel.disabled) {
+                    // Kunci city
+                    citySel.value = '';
+                    citySel.disabled = true;
+                } else if (!regPicked && !cityPicked) {
+                    // Tidak ada yang dipilih → dua-duanya aktif
+                    citySel.disabled = false;
+                }
+
+                if (cityPicked && !citySel.disabled) {
+                    // Kunci regency
+                    regSel.value = '';
+                    regSel.disabled = true;
+                } else if (!cityPicked && !regPicked) {
+                    // Tidak ada yang dipilih → dua-duanya aktif
+                    regSel.disabled = false;
+                }
+            }
+
+            // Reset keduanya saat province berubah
+            function resetDistricts() {
+                regSel.innerHTML = `<option value="">-- Select Regency --</option>`;
+                citySel.innerHTML = `<option value="">-- Select City --</option>`;
+                regSel.disabled = false;
+                citySel.disabled = false;
+            }
+
+            // Loaders
+            async function loadRegencies(pid) {
+                regSel.innerHTML = `<option value="">-- Select Regency --</option>`;
+                if (!pid) return;
+                const items = await fetch(`{{ route('loc.regencies') }}?province_id=${pid}`).then(r => r
+                .json());
+                regSel.innerHTML += items.map(x => `<option value="${x.id}">${x.name}</option>`).join('');
+            }
+            async function loadCities(pid) {
+                citySel.innerHTML = `<option value="">-- Select City --</option>`;
+                if (!pid) return;
+                const items = await fetch(`{{ route('loc.cities') }}?province_id=${pid}`).then(r => r.json());
+                citySel.innerHTML += items.map(x => `<option value="${x.id}">${x.name}</option>`).join('');
+            }
+
+            // 1) Load provinces
+            const provinces = await fetch('{{ route('loc.provinces') }}').then(r => r.json());
+            provSel.innerHTML = `<option value="">-- Select Province --</option>` +
+                provinces.map(p => `<option value="${p.province_id}">${p.province}</option>`).join('');
+
+            // pilih province berdasarkan nama lama (jika ada)
+            if (PREV.province) {
+                const hit = provinces.find(p => p.province === PREV.province);
+                if (hit) {
+                    provSel.value = hit.province_id;
+                    PREV.provinceIdGuess = hit.province_id;
+                }
+            }
+
+            // Event: province berubah → muat ulang & reset mutual
+            provSel.addEventListener('change', async (e) => {
+                const pid = e.target.value;
+                resetDistricts();
+                await Promise.all([loadRegencies(pid), loadCities(pid)]);
+                // setelah reload, pastikan tidak ada yang terkunci
+                regSel.disabled = false;
+                citySel.disabled = false;
+            });
+
+            // Event: regency/city berubah → jaga mutual exclusivity
+            regSel.addEventListener('change', syncMutualDisable);
+            citySel.addEventListener('change', syncMutualDisable);
+
+            // Prefill detail setelah province tertebak
+            if (PREV.provinceIdGuess) {
+                await Promise.all([loadRegencies(PREV.provinceIdGuess), loadCities(PREV.provinceIdGuess)]);
+                if (PREV.regencyId) {
+                    regSel.value = PREV.regencyId;
+                }
+                if (PREV.cityId) {
+                    citySel.value = PREV.cityId;
+                }
+                // Terapkan aturan eksklusif berdasar prefill
+                syncMutualDisable();
+            }
+        })();
+    </script>
 
 
 
     <script>
-        // modal helpers
-        window.__currentModal = null;
+        // modal helpers (blok keduanya tetap dipertahankan, implementasi diselaraskan)
+        window.__currentModal = window.__currentModal || null;
 
         function openModal(id) {
             const el = document.getElementById(id);
@@ -698,6 +932,7 @@
             input.focus();
         }
     </script>
+
 
 
 @endsection

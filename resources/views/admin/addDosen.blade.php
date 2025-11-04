@@ -1,3 +1,4 @@
+{{-- resources/views/admin/addDosen.blade.php --}}
 @extends('layouts.appAdmin')
 
 @section('title', 'Add Dosen')
@@ -27,35 +28,28 @@
         <table id="dosenTable" class="min-w-full bg-white border border-gray-200 rounded-xl shadow-sm">
             <thead class="bg-[#f9fafb] border-b">
                 <tr>
-                    <th class="py-3 px-5 text-left font-semibold text-gray-600 text-sm">NIP/NIDN</th>
+                    <th class="py-3 px-5 text-left font-semibold text-gray-600 text-sm">NIK</th>
                     <th class="py-3 px-5 text-left font-semibold text-gray-600 text-sm">Name</th>
+                    <th class="py-3 px-5 text-left font-semibold text-gray-600 text-sm">Role</th>
                     <th class="py-3 px-5 text-left font-semibold text-gray-600 text-sm">Action</th>
                 </tr>
             </thead>
             <tbody>
                 @php
-                    $dosenList = \App\Models\User::where('role', 'dosen')->orderBy('name_asli')->get();
+                    $dosenList = \App\Models\User::whereIn('role', ['dosen', 'kaprodi'])
+                        ->orderBy('name_asli')
+                        ->get();
                 @endphp
 
                 @foreach ($dosenList as $dosen)
-                    @php
-                        $nipNidn =
-                            $dosen->nip && $dosen->nidn
-                                ? $dosen->nip . ' / ' . $dosen->nidn
-                                : ($dosen->nip ?:
-                                ($dosen->nidn ?:
-                                '-'));
-                    @endphp
                     <tr class="{{ $loop->even ? 'bg-[#fafaff]' : 'bg-[#f8f6ff]' }} hover:bg-gray-50 transition">
-                        <td class="py-3 px-5 text-gray-700">{{ $nipNidn }}</td>
+                        <td class="py-3 px-5 text-gray-700">{{ $dosen->nik ?? '-' }}</td>
                         <td class="py-3 px-5 text-gray-700">{{ $dosen->name_asli }}</td>
+                        <td class="py-3 px-5 text-gray-700 capitalize">{{ $dosen->role }}</td>
                         <td class="py-3 px-5">
                             <div class="flex items-center space-x-3">
-                                {{-- <button class="text-[#0081a7] hover:opacity-70" title="View">
-                                    <i class="fas fa-user"></i>
-                                </button> --}}
                                 <form action="{{ route('admin.user.destroy', $dosen->id) }}" method="POST"
-                                    onsubmit="return confirm('Hapus akun {{ $dosen->name_asli }} ({{ $dosen->nip }})?');">
+                                    onsubmit="return confirm('Hapus akun {{ $dosen->name_asli }} ({{ $dosen->nik ?? '-' }})?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-[#b00020] hover:opacity-70" title="Delete">
@@ -73,30 +67,34 @@
     <!-- Modal -->
     <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-50">
         <div class="bg-white rounded-xl shadow-lg w-96 p-6">
-            <h3 class="text-center text-lg font-bold mb-4">PROFILE</h3>
+            <h3 class="text-center text-lg font-bold mb-4">ADD NEW DOSEN</h3>
 
             <form id="addDosenForm" method="POST" action="{{ route('admin.dosen.store') }}">
                 @csrf
-                <div class="grid grid-cols-2 gap-3 mb-4">
-                    <div>
-                        <label for="nip" class="block text-sm font-semibold mb-1">NIP</label>
-                        <input type="text" id="nip" name="nip" maxlength="7"
-                            class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-[#6b8a99] focus:outline-none">
-                    </div>
-                    <div>
-                        <label for="nidn" class="block text-sm font-semibold mb-1">NIDN</label>
-                        <input type="text" id="nidn" name="nidn" maxlength="10"
-                            oninput="this.value=this.value.replace(/[^0-9]/g,'')"
-                            class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-[#6b8a99] focus:outline-none">
-                    </div>
+                <div class="mb-4">
+                    <label for="nik" class="block text-sm font-semibold mb-1">NIK</label>
+                    <input type="text" id="nik" name="nik" maxlength="8"
+                        class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-[#6b8a99] focus:outline-none"
+                        required>
                 </div>
 
-                <div class="mb-6">
+                <div class="mb-4">
                     <label for="name" class="block text-sm font-semibold mb-1">Full Name</label>
                     <input type="text" id="name" name="name"
                         class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-[#6b8a99] focus:outline-none"
                         required>
                 </div>
+
+                <div class="mb-4">
+                    <label for="role" class="block text-sm font-semibold mb-1">Role</label>
+                    <select id="role" name="role"
+                        class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-[#6b8a99] focus:outline-none"
+                        required>
+                        <option value="dosen" selected>Dosen</option>
+                        <option value="kaprodi">Kaprodi</option>
+                    </select>
+                </div>
+
 
                 <div class="mb-6 relative">
                     <label for="password" class="block text-sm font-semibold mb-1">Password</label>
@@ -181,7 +179,6 @@
                     }
                 },
                 initComplete: function(settings) {
-                    // Jika tabel kosong, isi manual agar tidak error
                     if (settings.aoData.length === 0) {
                         $('#dosenTable tbody').html(`
                             <tr>
@@ -194,7 +191,6 @@
                 }
             });
 
-            // Custom search
             let t;
             $('#customSearch').on('input', function() {
                 clearTimeout(t);

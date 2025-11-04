@@ -26,10 +26,17 @@ class MhsAllWorksController extends Controller
         $sort     = $request->input('sort', 'latest'); // latest | most_liked | most_viewed
 
         $query = Project::query()
-            ->with(['user:id,name_asli,username,email']) // untuk tampilkan pemilik project
-            ->select(['id','user_id','anonim_name','title','category','course','client','semester','display_photos','views','likes']);
+            ->with([
+                'user:id,name_asli,username,email',
+                // penting: status like viewer (login → user_id, publik → anon_key dari cookie)
+                'currentViewerInteraction',
+            ])
+            ->select([
+                'id','user_id','anonim_name','title','category','course','client',
+                'semester','display_photos','views','likes'
+            ]);
 
-        // Search ringan di beberapa kolom
+        // Search ringan
         if ($q !== '') {
             $query->where(function ($sub) use ($q) {
                 $sub->where('title', 'like', "%{$q}%")
@@ -39,24 +46,14 @@ class MhsAllWorksController extends Controller
             });
         }
 
-        if ($category !== '') {
-            $query->where('category', $category);
-        }
+        if ($category !== '')   $query->where('category', $category);
+        if (!is_null($semester)) $query->where('semester', $semester);
 
-        if (!is_null($semester)) {
-            $query->where('semester', $semester);
-        }
-
-        // Urutan default: terbaru (tanpa timestamps kita pakai id desc)
+        // Urutan
         switch ($sort) {
-            case 'most_liked':
-                $query->orderByDesc('likes')->orderByDesc('id');
-                break;
-            case 'most_viewed':
-                $query->orderByDesc('views')->orderByDesc('id');
-                break;
-            default:
-                $query->orderByDesc('id');
+            case 'most_liked':  $query->orderByDesc('likes')->orderByDesc('id');  break;
+            case 'most_viewed': $query->orderByDesc('views')->orderByDesc('id');  break;
+            default:            $query->orderByDesc('id');
         }
 
         $projects = $query->paginate($perPage)->appends($request->query());

@@ -31,23 +31,62 @@ class DosenDashboardController extends Controller
 
         // ========== STUDENT INTERESTS ==========
         $rowsInterest = Project::query()
-            ->select('category', DB::raw('COUNT(*) AS total'))
             ->whereNotNull('category')
+            ->select('category', DB::raw('COUNT(*) AS total'))
             ->groupBy('category')
-            ->orderBy('total', 'desc')
+            ->orderByDesc('total')
+            ->limit(10)               // << hanya 10 terbanyak
             ->get();
 
         $interestLabels = $rowsInterest->pluck('category');
         $interestCounts = $rowsInterest->pluck('total');
 
-        // kirim semua ke view
+        // ===== SCHOOL ORIGIN MAP: baca dari city_id, city, atau regency =====
+
+        // 1) baris yang sudah punya FK
+        $byId = DB::table('schools as s')
+            ->join('cities as c', 's.city_id', '=', 'c.id')
+            ->select('c.id','c.name','c.province','c.lat','c.lng', DB::raw('COUNT(*) as total'))
+            ->whereNotNull('s.city_id')
+            ->groupBy('c.id','c.name','c.province','c.lat','c.lng');
+
+        // 2) baris lama yang masih teks "city"
+        $byCityName = DB::table('schools as s')
+            ->join('cities as c', 'c.name', '=', 's.city')
+            ->select('c.id','c.name','c.province','c.lat','c.lng', DB::raw('COUNT(*) as total'))
+            ->whereNull('s.city_id')
+            ->whereNotNull('s.city')
+            ->where('s.city', '!=', '')
+            ->groupBy('c.id','c.name','c.province','c.lat','c.lng');
+
+        // 3) baris lama yang hanya isi "regency"
+        $byRegencyName = DB::table('schools as s')
+            ->join('cities as c', 'c.name', '=', 's.regency')
+            ->select('c.id','c.name','c.province','c.lat','c.lng', DB::raw('COUNT(*) as total'))
+            ->whereNull('s.city_id')
+            ->where(function ($q) {
+                $q->whereNull('s.city')->orWhere('s.city', '=', '');
+            })
+            ->whereNotNull('s.regency')
+            ->where('s.regency', '!=', '')
+            ->groupBy('c.id','c.name','c.province','c.lat','c.lng');
+
+        // gabungkan semuanya lalu jumlahkan
+        $union = $byId->unionAll($byCityName)->unionAll($byRegencyName);
+
+        $mapMarkers = DB::query()
+            ->fromSub($union, 't')
+            ->select('id','name','province','lat','lng', DB::raw('SUM(total) as total'))
+            ->groupBy('id','name','province','lat','lng')
+            ->orderByDesc('total')
+            ->get();
+
         return view('dosen.dashboardDsn', [
-            // Active students
             'activeCohortLabels' => $activeLabels,
             'activeCohortCounts' => $activeCounts,
-            // Student interests
-            'interestLabels' => $interestLabels,
-            'interestCounts' => $interestCounts,
+            'interestLabels'     => $interestLabels,
+            'interestCounts'     => $interestCounts,
+            'mapMarkers'         => $mapMarkers, // << kirim ke Blade
         ]);
     }
 }

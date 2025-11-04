@@ -25,15 +25,28 @@ class MhsProfileController extends Controller
     {
         $user = \Illuminate\Support\Facades\Auth::user();
 
-        // Validasi field profil + foto (opsional)
+        // Validasi field profil + foto (opsional) + password (opsional)
         $validated = $request->validate([
-            'phone'          => ['nullable','string','max:30'],
-            'address'        => ['nullable','string','max:255'],
-            'email_pribadi'  => ['nullable','email','max:255'],
-            'motivation'     => ['nullable','string','max:2000'],
-            'tags'           => ['nullable','array'],
-            'tags.*'         => ['string','max:30'],
-            'photo'          => ['nullable','image','mimes:jpg,jpeg,png,webp','max:2048'], // 2MB
+            'phone'            => ['nullable','string','max:30'],
+            'address'          => ['nullable','string','max:255'],
+            'email_pribadi'    => ['nullable','email','max:255'],
+            'motivation'       => ['nullable','string','max:2000'],
+            'tags'             => ['nullable','array'],
+            'tags.*'           => ['string','max:30'],
+            'photo'            => ['nullable','image','mimes:jpg,jpeg,png,webp','max:2048'], // 2MB
+
+            // Current password wajib kalau ingin ganti password dan harus match
+            // gunakan rule bawaan Laravel: current_password
+            'current_password' => ['nullable','string','required_with:new_password','current_password'],
+
+            // New password opsional, min 6, kombinasi huruf & angka, beda dari current
+            'new_password'     => ['nullable','string','min:6','regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/','different:current_password'],
+        ], [
+            'new_password.min'               => 'Password must be at least 6 characters.',
+            'new_password.regex'             => 'Passwords must contain a combination of letters and numbers.',
+            'new_password.different'         => 'The new password cannot be the same as the current password.',
+            'current_password.required_with' => 'Enter the current password to change it.',
+            'current_password.current_password' => 'The current password does not match.',
         ]);
 
         // Ambil/buat profile milik user
@@ -52,16 +65,12 @@ class MhsProfileController extends Controller
         // Handle Upload Foto -> public/uploads/profiles
         if ($request->hasFile('photo')) {
             $dir = public_path('uploads/profiles');
-            if (!is_dir($dir)) {
-                @mkdir($dir, 0775, true);
-            }
+            if (!is_dir($dir)) { @mkdir($dir, 0775, true); }
 
             // Hapus file lama jika ada
             if (!empty($profile->getOriginal('photo'))) {
                 $old = public_path('uploads/profiles/' . $profile->getOriginal('photo'));
-                if (file_exists($old)) {
-                    @unlink($old);
-                }
+                if (file_exists($old)) { @unlink($old); }
             }
 
             $file = $request->file('photo');
@@ -72,12 +81,17 @@ class MhsProfileController extends Controller
             $profile->photo = $name;
         }
 
+        // Simpan perubahan profil
         $profile->save();
+
+        // Update password bila diisi (pada titik ini current_password sudah tervalidasi)
+        if ($request->filled('new_password')) {
+            $user->password = \Illuminate\Support\Facades\Hash::make($request->input('new_password'));
+            $user->save();
+        }
 
         return back()->with('success', 'Profile saved.');
     }
-
-
 
     public function saveActivities(Request $request)
     {
@@ -112,21 +126,59 @@ class MhsProfileController extends Controller
 
     public function saveSchool(Request $request)
     {
-        $user = Auth::user();
+        $user = \Illuminate\Support\Facades\Auth::user();
 
-        $data = $request->validate([
-            'school_origin' => 'nullable|string|max:255',
-            'city'          => 'nullable|string|max:100',
-            'regency'       => 'nullable|string|max:100',
-            'province'      => 'nullable|string|max:100',
-            'level'         => 'nullable|in:SMA,SMK',
+        // Validasi
+        $validated = $request->validate([
+            'school_origin' => ['nullable','string','max:255'],
+            'level'         => ['nullable','in:SMA,SMK'],
+            'province_id'   => ['required','string','max:3'],
+            'regency_id'    => ['nullable','integer','exists:cities,id'],
+            'city_id'       => ['nullable','integer','exists:cities,id'],
         ]);
 
-        School::updateOrCreate(
+        // Ambil nilai secara aman (bisa null)
+        $cityId    = $request->input('city_id');    // null jika tidak dikirim
+        $regencyId = $request->input('regency_id'); // null jika tidak dikirim
+
+        // Wajib salah satu
+        if (!$cityId && !$regencyId) {
+            return back()->withErrors([
+                'city_id' => 'Pilih City atau Regency.'
+            ])->withInput();
+        }
+
+        // City prioritas; kalau tidak ada, pakai regency
+        $chosenId = $cityId ?? $regencyId;
+        $chosen   = \App\Models\City::find($chosenId);
+        if (!$chosen) {
+            return back()->withErrors([
+                'city_id' => 'Lokasi tidak valid.'
+            ])->withInput();
+        }
+
+        // Nama provinsi konsisten dari referensi
+        $provinceName = $chosen->province;
+
+        // Set salah satu & kosongkan yang lain (hindari “nyangkut”)
+        $regName  = $chosen->type === 'KAB'  ? $chosen->name : null;
+        $cityName = $chosen->type === 'KOTA' ? $chosen->name : null;
+
+        \App\Models\School::updateOrCreate(
             ['user_id' => $user->id],
-            $data
+            [
+                'school_origin' => $validated['school_origin'] ?? null,
+                'level'         => $validated['level'] ?? null,
+                'province'      => $provinceName,
+                'regency'       => $regName,   // terisi hanya jika KAB
+                'city'          => $cityName,  // terisi hanya jika KOTA
+                'city_id'       => $chosen->id,
+            ]
         );
 
         return back()->with('success', 'School saved.');
     }
+
+
+
 }
