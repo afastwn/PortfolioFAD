@@ -182,7 +182,7 @@
                     if (settings.aoData.length === 0) {
                         $('#dosenTable tbody').html(`
                             <tr>
-                                <td colspan="3" class="py-6 text-center text-gray-500 italic">
+                                <td colspan="4" class="py-6 text-center text-gray-500 italic">
                                     Belum ada data dosen.
                                 </td>
                             </tr>

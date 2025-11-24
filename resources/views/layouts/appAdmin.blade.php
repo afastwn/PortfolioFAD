@@ -49,7 +49,7 @@
     </style>
 </head>
 
-<body class="relative min-h-screen overflow-x-hidden bg-[url('/BG.png')] bg-no-repeat bg-left-top bg-cover">
+<body class="relative min-h-screen overflow-x-hidden bg-[url('/BG1.jpg')] bg-no-repeat bg-left-top bg-cover">
 
     <!-- Logo = Logout -->
     <div class="absolute -top-12 left-6 z-20 flex flex-col items-start">

@@ -15,9 +15,8 @@ class MhsAllWorksController extends Controller
     {
         // per_page dari dropdown "Show entries"
         $perPage = (int) $request->input('per_page', 10);
-        if (!in_array($perPage, [10, 20, 30])) {
-            $perPage = 10;
-        }
+        if (!in_array($perPage, [10, 25, 50, 100])) $perPage = 10;
+
 
         // optional: q (search), category, semester, sort
         $q        = trim((string) $request->input('q', ''));

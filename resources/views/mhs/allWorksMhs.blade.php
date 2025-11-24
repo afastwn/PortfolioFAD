@@ -10,44 +10,111 @@
         </h1>
     </header>
 
-    {{-- Show entries --}}
+    @php
+        $categoryOptions = [
+            'Home and Seating Furniture',
+            'Bedroom Furniture and Beds',
+            'Lamps and Luminaires',
+            'Lighting Systems',
+            'Household Appliances and Household Accessories',
+            'Kitchens and Kitchen Furniture',
+            'Kitchen Taps and Sinks',
+            'Kitchen Appliances and Kitchen Accessories',
+            'Cookware and Cooking Utensils',
+            'Tableware',
+            'Bathroom and Sanitary Equipment',
+            'Bathroom Taps and Shower Heads',
+            'Garden Furniture',
+            'Garden Appliances and Garden Equipment',
+            'Outdoor and Camping Equipment',
+            'Sports Equipment',
+            'Hobby and Leisure',
+            'Bicycles and Bicycle Accessories',
+            'Babies and Children',
+            'Personal Care, Wellness and Beauty',
+            'Fashion and Lifestyle Accessories',
+            'Luggage and Bags',
+            'Eyewear',
+            'Watches',
+            'Jewellery',
+            'Interior Architecture',
+            'Interior Design Elements',
+            'Urban Design',
+            'Materials and Surfaces',
+            'Office Furniture and Office Chairs',
+            'Office Supplies and Stationery',
+            'Tools',
+            'Heating and Air Conditioning Technology',
+            'Industrial Equipment, Machinery and Automation',
+            'Robotics',
+            'Medical Devices and Technology',
+            'Healthcare',
+            'Cars and Motorcycles',
+            'Motorhomes and Caravans',
+            'Watercraft',
+            'Trains and Planes',
+            'Commercial Vehicles',
+            'Vehicle Accessories',
+            'TV and Home Entertainment',
+            'Audio',
+            'Cameras and Camera Equipment',
+            'Drones and Action Cameras',
+            'Mobile Phones, Tablets and Wearables',
+            'Communication Technology',
+            'Computer and Information Technology',
+            'Gaming and Streaming',
+            'Packaging',
+        ];
+
+        $currentCategory = request('category');
+        $currentPerPage = (int) request('per_page', $perPage ?? 10);
+    @endphp
+
+    {{-- FILTER: kanan, kiri=category, kanan=show entries --}}
     <div class="flex justify-end mb-6">
-        <label class="flex items-center gap-2 text-sm">
-            Show
-            <select name="per_page" class="border rounded px-2 py-1" onchange="this.form.submit()">
-                @foreach ([10, 20, 30] as $n)
-                    <option value="{{ $n }}" {{ (int) request('per_page', $perPage) === $n ? 'selected' : '' }}>
-                        {{ $n }}</option>
-                @endforeach
-            </select>
-            entries
-        </label>
+        <form method="GET" action="{{ url()->current() }}" class="flex flex-wrap items-center gap-4 text-sm justify-end">
+
+            {{-- KIRI: Category --}}
+            <div class="flex items-center gap-2">
+                <span>Category</span>
+                <select name="category" class="border rounded px-2 py-1 w-60" onchange="this.form.submit()">
+                    <option value="">All Categories</option>
+                    @foreach ($categoryOptions as $cat)
+                        <option value="{{ $cat }}" {{ $currentCategory === $cat ? 'selected' : '' }}>
+                            {{ $cat }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- KANAN: Show entries --}}
+            <div class="flex items-center gap-2">
+                <span>Show</span>
+                <select name="per_page" class="border rounded px-2 py-1" onchange="this.form.submit()">
+                    @foreach ([10, 25, 50, 100] as $n)
+                        <option value="{{ $n }}" {{ $currentPerPage === $n ? 'selected' : '' }}>
+                            {{ $n }}
+                        </option>
+                    @endforeach
+                </select>
+                <span>entries</span>
+            </div>
+
+            {{-- Pertahankan query lain (kalau nanti ada tambahan param lain) --}}
+            @foreach (request()->except(['per_page', 'page', 'category']) as $k => $v)
+                <input type="hidden" name="{{ $k }}" value="{{ $v }}">
+            @endforeach
+
+            {{-- Reset ke halaman 1 kalau filter berubah --}}
+            <input type="hidden" name="page" value="1">
+        </form>
     </div>
+
 
     @php
         // array gambar dari public/
         $images = ['G1.png', 'G2.png', 'G3.png'];
     @endphp
-
-    {{-- Grid 3 kolom, total 15 kotak (5 baris)
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        @forelse ($projects as $project)
-            @php
-                $cover = $project->display_cover_url ?? asset('images/placeholder.png'); // sediakan placeholder.png di public/images
-            @endphp
-            <figure class="bg-white shadow-md p-4 relative w-full " style="box-shadow: 2px 2px 6px #b8b8b8;">
-                <img src="{{ $cover }}" alt="{{ $project->title }}" class="w-full aspect-square object-cover"
-                    loading="lazy" />
-                <figcaption class="flex justify-center items-center space-x-6 mt-3 text-lg">
-                    <i class="fas fa-heart text-red-600 cursor-pointer hover:scale-110 transition"></i>
-                    <i class="fas fa-thumbs-down text-orange-500 cursor-pointer hover:scale-110 transition"></i>
-                    <i class="fas fa-comment text-sky-500 cursor-pointer hover:scale-110 transition"></i>
-                </figcaption>
-            </figure>
-        @empty
-            <p class="col-span-full text-center text-gray-500">Belum ada proyek.</p>
-        @endforelse
-    </div> --}}
 
     {{-- Grid 3 kolom, dengan nama alias dan nama kategory --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -93,6 +160,19 @@
         @endforelse
     </div>
 
+    {{-- Footer: info + pagination --}}
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mt-6">
+        <p class="text-sm text-gray-600">
+            Showing
+            <span class="font-semibold">
+                {{ $projects->firstItem() ?? 0 }}–{{ $projects->lastItem() ?? 0 }}
+            </span>
+            of <span class="font-semibold">{{ $projects->total() }}</span> projects
+        </p>
+        <div>
+            {{ $projects->onEachSide(1)->links() }}
+        </div>
+    </div>
 
     <!-- Comment Modal -->
     <div id="commentModal" class="fixed inset-0 bg-black/40 z-50 hidden justify-center items-center">
@@ -133,8 +213,6 @@
             </form>
         </div>
     </div>
-
-
 
     @push('scripts')
         <script>
@@ -185,10 +263,8 @@
                 let activeProjectId = null;
                 let activeCommentBtn = null;
 
-                // helpers
                 function openCommentModal(projectId, existingComments) {
                     activeProjectId = projectId;
-                    // reset & prefill
                     form.reset();
                     if (Array.isArray(existingComments)) {
                         const set = new Set(existingComments);
@@ -207,7 +283,6 @@
                     activeCommentBtn = null;
                 };
 
-                // open modal on click
                 document.querySelectorAll('.comment-btn').forEach(btn => {
                     btn.addEventListener('click', function() {
                         activeCommentBtn = this;
@@ -228,7 +303,6 @@
                     const selected = [...form.querySelectorAll('input[name="comments[]"]:checked')].map(cb => cb
                         .value);
 
-                    // Kalau kosong, konfirmasi penghapusan (opsional)
                     if (selected.length === 0) {
                         const ok = confirm('Delete all comments?');
                         if (!ok) return;
@@ -251,7 +325,6 @@
                             return r.json();
                         })
                         .then(data => {
-                            // Update ikon sesuai hasil
                             if (activeCommentBtn) {
                                 const icon = activeCommentBtn.querySelector('.fa-comment');
                                 if (data.has_comments) {
@@ -277,7 +350,4 @@
             });
         </script>
     @endpush
-
-
-
 @endsection

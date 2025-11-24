@@ -10,24 +10,16 @@ class DosenDashboardController extends Controller
 {
     public function index()
     {
-        // ========== ACTIVE STUDENTS ==========
-        $rowsActive = DB::table('users')
+        // ========== STUDENT BODY (TOTAL STUDENTS) ==========
+        $studentBuddyTotal = DB::table('users')
             ->where('role', 'mahasiswa')
             ->whereNotNull('nim')
-            ->selectRaw("
-                CASE
-                    WHEN LENGTH(CAST(nim AS CHAR)) >= 4
-                        THEN CONCAT('20', SUBSTRING(LPAD(CAST(nim AS CHAR), 8, '0'), 3, 2))
-                    ELSE 'Unknown'
-                END AS cohort
-            ")
-            ->selectRaw("COUNT(*) AS total")
-            ->groupBy('cohort')
-            ->orderBy('cohort')
-            ->get();
+            ->count();
 
-        $activeLabels = $rowsActive->pluck('cohort');
-        $activeCounts = $rowsActive->pluck('total');
+        // tetap pakai variabel lama supaya Blade tidak banyak diubah
+        $activeLabels = collect(['Product Design Students']);
+        $activeCounts = collect([$studentBuddyTotal]);
+
 
         // ========== STUDENT INTERESTS ==========
         $rowsInterest = Project::query()

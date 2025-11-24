@@ -57,31 +57,37 @@
                 <div>
                     <h3 class="font-semibold mb-4">Basic Description</h3>
                     <dl class="text-xs">
-                        <div class="flex items-center gap-3 py-2 border-b border-gray-100">
-                            <dt class="w-44 text-gray-600">NIK</dt>
-                            <dd class="flex-1">: {{ $user->nik ?? '-' }}</dd>
+                        {{-- NIK --}}
+                        <div class="grid grid-cols-[8rem,auto,1fr] items-start py-2 border-b border-gray-100">
+                            <dt class="text-gray-600">NIK</dt>
+                            <span class="text-gray-400 -ml-7">:</span>
+                            <dd class="-ml-3">{{ $user->nik ?? '-' }}</dd>
                         </div>
-                        <div class="flex items-center gap-3 py-2 border-b border-gray-100">
-                            <dt class="w-44 text-gray-600">FULL NAME</dt>
-                            <dd class="flex-1">: {{ $user->name_asli ?? '-' }}</dd>
+
+                        {{-- FULL NAME --}}
+                        <div class="grid grid-cols-[8rem,auto,1fr] items-start py-2 border-b border-gray-100">
+                            <dt class="text-gray-600">FULL NAME</dt>
+                            <span class="text-gray-400 -ml-7">:</span>
+                            <dd class="-ml-3 break-words">{{ $user->name_asli ?? '-' }}</dd>
                         </div>
-                        <div class="flex items-center gap-3 py-2 border-b border-gray-100">
-                            <dt class="w-44 text-gray-600">DEPARTMENT</dt>
-                            @php
-                                $deptMap = [
-                                    'Desain Produk' => 'Product Design',
-                                    'Product Design' => 'Product Design',
-                                    'Arsitektur' => 'Architecture',
-                                    'Architecture' => 'Architecture',
-                                ];
-                                $deptDisplay = $deptMap[$profil->department ?? ''] ?? ($profil->department ?? '-');
-                            @endphp
-                            <dd class="flex-1">: {{ $deptDisplay }}</dd>
+
+                        {{-- @php
+                            $deptMap = [
+                                'Desain Produk' => 'Product Design',
+                                'Product Design' => 'Product Design',
+                                'Arsitektur' => 'Architecture',
+                                'Architecture' => 'Architecture',
+                            ];
+                            $deptDisplay = $deptMap[$profil->department ?? ''] ?? ($profil->department ?? '-');
+                        @endphp --}}
+
+                        {{-- DEPARTMENT --}}
+                        <div class="grid grid-cols-[8rem,auto,1fr] items-start py-2 border-b border-gray-100">
+                            <dt class="text-gray-600">DEPARTMENT</dt>
+                            <span class="text-gray-400 -ml-7">:</span>
+                            <dd class="-ml-3">Product Design</dd>
                         </div>
-                        {{-- <div class="flex items-center gap-3 py-2">
-                            <dt class="w-44 text-gray-600">ACADEMIC ADVISOR</dt>
-                            <dd class="flex-1">: {{ $profil->academic_advisor ?? '-' }}</dd>
-                        </div> --}}
+
                     </dl>
                 </div>
 
@@ -89,13 +95,18 @@
                 <div>
                     <h3 class="font-semibold mb-4">Contact</h3>
                     <dl class="text-xs">
-                        <div class="flex items-center gap-3 py-2 border-b border-gray-100">
-                            <dt class="w-44 text-gray-600">PERSONAL EMAIL</dt>
-                            <dd class="flex-1">: {{ $profil->personal_email ?? '-' }}</dd>
+                        {{-- PERSONAL EMAIL --}}
+                        <div class="grid grid-cols-[8rem,auto,1fr] items-start py-2 border-b border-gray-100">
+                            <dt class="text-gray-600">PERSONAL EMAIL</dt>
+                            <span class="text-gray-400 -ml-3">:</span>
+                            <dd class="-ml-1 break-words">{{ $profil->personal_email ?? '-' }}</dd>
                         </div>
-                        <div class="flex items-center gap-3 py-2">
-                            <dt class="w-44 text-gray-600">PHONE NUMBER</dt>
-                            <dd class="flex-1">: {{ $profil->phone_number ?? '-' }}</dd>
+
+                        {{-- PHONE NUMBER --}}
+                        <div class="grid grid-cols-[8rem,auto,1fr] items-start py-2">
+                            <dt class="text-gray-600">PHONE NUMBER</dt>
+                            <span class="text-gray-400 -ml-3">:</span>
+                            <dd class="-ml-1">{{ $profil->phone_number ?? '-' }}</dd>
                         </div>
                     </dl>
                 </div>
@@ -144,26 +155,13 @@
                                 class="w-full h-11 rounded-lg border border-gray-300 px-3 bg-gray-100 text-gray-600 cursor-not-allowed"
                                 value="{{ $user->name_asli ?? '-' }}" />
 
-                            @php
-                                $deptNow = old('department', $profil->department);
-                                $options = ['Product Design', 'Architecture'];
-                            @endphp
-
                             <label class="block font-semibold mt-5 mb-1">Department</label>
-                            <select name="department"
-                                class="w-full h-11 rounded-lg border border-gray-300 px-3 focus:ring-2 focus:ring-blue-500">
-                                <option value="">-- Select Department --</option>
+                            <input type="text" value="Product Design" readonly
+                                class="w-full h-11 rounded-lg border border-gray-300 px-3 bg-gray-100 text-gray-600 cursor-not-allowed" />
 
-                                {{-- tampilkan nilai lama (current) jika belum ada di daftar --}}
-                                @if ($deptNow && !in_array($deptNow, $options))
-                                    <option value="{{ $deptNow }}" selected>(Current) {{ $deptNow }}</option>
-                                @endif
+                            {{-- hidden supaya tetap terkirim ke server --}}
+                            <input type="hidden" name="department" value="Product Design">
 
-                                @foreach ($options as $opt)
-                                    <option value="{{ $opt }}" {{ $deptNow === $opt ? 'selected' : '' }}>
-                                        {{ $opt }}</option>
-                                @endforeach
-                            </select>
                         </div>
 
                         {{-- KANAN --}}
@@ -180,8 +178,8 @@
                                 class="w-full h-11 rounded-lg border border-gray-300 px-3 focus:ring-2 focus:ring-blue-500"
                                 value="{{ old('phone_number', $profil->phone_number) }}" inputmode="numeric"
                                 oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="15" />
+
                             <!-- CHANGE PASSWORD -->
-                            {{-- <div class="mt-8"> --}}
                             <label class="block text-base font-semibold mt-6 mb-1">Change Password</label>
 
                             <!-- Current Password -->
@@ -208,24 +206,15 @@
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </div>
-                            {{-- </div> --}}
 
-
-                            {{-- 🔧 Spacer untuk menyamakan baris dengan "Departement" di kolom kiri --}}
-                            <div class="mt-5 hidden lg:block">
-                                <label class="block font-semibold mb-1 opacity-0 select-none">Spacer</label>
-                                <div class="h-11"></div>
-                            </div>
-
-                            {{-- ✅ Tombol sekarang sejajar dengan "Academic Advisor" di kiri --}}
-                            <div class="mt-(-40) flex xl:justify-end justify-end">
+                            {{-- ✅ Tombol tepat di bawah new password --}}
+                            <div class="mt-6 flex justify-end">
                                 <button type="submit"
                                     class="px-48 h-11 rounded-xl bg-blue-600 text-white font-bold tracking-wide hover:brightness-110 active:brightness-95">
                                     SUBMIT
                                 </button>
                             </div>
                         </div>
-
                     </div>
                 </form>
 

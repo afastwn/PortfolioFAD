@@ -23,7 +23,7 @@
     </style>
 </head>
 
-<body class="relative min-h-screen overflow-x-hidden bg-[url('/BG.png')] bg-no-repeat bg-left-top bg-cover">
+<body class="relative min-h-screen overflow-x-hidden bg-[url('/BG1.jpg')] bg-no-repeat bg-left-top bg-cover">
     <div class="px-6 sm:px-8 pt-6">
         <div class="flex items-center justify-between">
             <img src="/DWDP.png" alt="Logo" class="h-16 w-auto object-contain">
@@ -234,7 +234,7 @@
                     <div class="flex items-center justify-end">
                         <a href="#"
                             class="italic text-sm text-gray-600 hover:text-gray-800 transition-opacity duration-200 opacity-70 hover:opacity-100">
-                            Forgot password?
+                            {{-- Forgot password? --}}
                         </a>
                     </div>
 

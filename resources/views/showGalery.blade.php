@@ -21,47 +21,143 @@
     </style>
 </head>
 
-<body class="min-h-screen bg-[url('/BG.png')] bg-no-repeat bg-left-top bg-cover">
+<body class="min-h-screen bg-[url('/BG1.jpg')] bg-no-repeat bg-left-top bg-cover">
 
     <!-- WRAPPER: kotak putih besar -->
     <div class="max-w-8xl mx-auto px-4 sm:px-6 py-8">
         <div class="rounded-2xl bg-white shadow-2xl ring-1 ring-black/5">
-            <!-- HEADER TOP: Logo (kiri) & HELLO (kanan) -->
+            <!-- HEADER TOP -->
             <div class="px-6 sm:px-8 pt-6">
                 <div class="flex items-center justify-between">
                     <a href="/login"><img src="/DWDP.png" alt="Logo" class="h-16 w-auto object-contain"></a>
-                    <div class="flex items-center gap-2">
-                        <span class="text-4xl sm:text-5xl font-extrabold tracking-tight">HELLO!</span>
-                        <span class="text-5xl sm:text-6xl">👋</span>
+
+                    <div class="flex flex-col items-start sm:items-end">
+                        <h2 class="text-2xl font-extrabold flex items-center gap-2">
+                            Hello, Guest! 👋
+                        </h2>
                     </div>
                 </div>
-                <!-- Garis agak transparan -->
+
                 <div class="mt-4 border-t border-gray-300/60"></div>
             </div>
 
-            <!-- BARIS JUDUL + SHOW ENTRIES -->
+
+            <!-- JUDUL + FILTER + SHOW ENTRIES -->
+            @php
+                $categoryOptions = [
+                    'Home and Seating Furniture',
+                    'Bedroom Furniture and Beds',
+                    'Lamps and Luminaires',
+                    'Lighting Systems',
+                    'Household Appliances and Household Accessories',
+                    'Kitchens and Kitchen Furniture',
+                    'Kitchen Taps and Sinks',
+                    'Kitchen Appliances and Kitchen Accessories',
+                    'Cookware and Cooking Utensils',
+                    'Tableware',
+                    'Bathroom and Sanitary Equipment',
+                    'Bathroom Taps and Shower Heads',
+                    'Garden Furniture',
+                    'Garden Appliances and Garden Equipment',
+                    'Outdoor and Camping Equipment',
+                    'Sports Equipment',
+                    'Hobby and Leisure',
+                    'Bicycles and Bicycle Accessories',
+                    'Babies and Children',
+                    'Personal Care, Wellness and Beauty',
+                    'Fashion and Lifestyle Accessories',
+                    'Luggage and Bags',
+                    'Eyewear',
+                    'Watches',
+                    'Jewellery',
+                    'Interior Architecture',
+                    'Interior Design Elements',
+                    'Urban Design',
+                    'Materials and Surfaces',
+                    'Office Furniture and Office Chairs',
+                    'Office Supplies and Stationery',
+                    'Tools',
+                    'Heating and Air Conditioning Technology',
+                    'Industrial Equipment, Machinery and Automation',
+                    'Robotics',
+                    'Medical Devices and Technology',
+                    'Healthcare',
+                    'Cars and Motorcycles',
+                    'Motorhomes and Caravans',
+                    'Watercraft',
+                    'Trains and Planes',
+                    'Commercial Vehicles',
+                    'Vehicle Accessories',
+                    'TV and Home Entertainment',
+                    'Audio',
+                    'Cameras and Camera Equipment',
+                    'Drones and Action Cameras',
+                    'Mobile Phones, Tablets and Wearables',
+                    'Communication Technology',
+                    'Computer and Information Technology',
+                    'Gaming and Streaming',
+                    'Packaging',
+                ];
+
+                $currentCategory = request('category');
+                $currentPerPage = (int) ($perPage ?? request('per_page', 10));
+            @endphp
+
             <div class="px-6 sm:px-8 py-5">
-                <div class="flex items-center justify-between">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
                     <h1 class="text-xl sm:text-2xl font-extrabold">Galery</h1>
-                    <label class="flex items-center gap-2 text-sm">
-                        Show
-                        <select class="border rounded px-2 py-1">
-                            <option>10</option>
-                            <option>20</option>
-                            <option>30</option>
-                        </select>
-                        entries
-                    </label>
+
+                    <!-- FILTER + SHOW ENTRIES FORM -->
+                    <form id="entriesForm" method="GET" action="{{ url()->current() }}"
+                        class="flex flex-col sm:flex-row gap-3 sm:items-center text-sm">
+
+                        <!-- FILTER CATEGORY (DULUAN) -->
+                        <div class="flex items-center gap-2">
+                            <span>Category</span>
+                            <select name="category" class="border rounded px-2 py-1 max-w-xs"
+                                onchange="this.form.submit()">
+                                <option value="">All Categories</option>
+                                @foreach ($categoryOptions as $cat)
+                                    <option value="{{ $cat }}"
+                                        {{ $currentCategory === $cat ? 'selected' : '' }}>
+                                        {{ $cat }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Separator (desktop only) -->
+                        <span class="hidden sm:inline-block w-px h-6 bg-gray-300"></span>
+
+                        <!-- SHOW ENTRIES (SETELAH FILTER) -->
+                        <div class="flex items-center gap-2">
+                            <span>Show</span>
+                            <select name="per_page" class="border rounded px-2 py-1" onchange="this.form.submit()">
+                                @foreach ([10, 25, 50, 100] as $n)
+                                    <option value="{{ $n }}" {{ $currentPerPage === $n ? 'selected' : '' }}>
+                                        {{ $n }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <span>entries</span>
+                        </div>
+
+                        {{-- Pertahankan query lain --}}
+                        @foreach (request()->except(['per_page', 'page', 'category']) as $k => $v)
+                            <input type="hidden" name="{{ $k }}" value="{{ $v }}">
+                        @endforeach
+
+                        <input type="hidden" name="page" value="1">
+                    </form>
+
                 </div>
             </div>
 
-            <!-- GRID GALERY -->
-            <div class="px-6 sm:px-8 pb-8">
-                @php
-                    // file gambar dari /public
-                    $images = ['G1.png', 'G2.png', 'G3.png'];
-                @endphp
 
+
+            <!-- GRID GALERY -->
+            <div class="px-6 sm:px-8 pb-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     @forelse ($projects as $project)
                         @php
@@ -87,7 +183,8 @@
                                 <button type="button" class="comment-btn hover:scale-110 transition"
                                     data-project-id="{{ $project->id }}" data-existing='@json($commentsArr)'
                                     data-commented="{{ $hasComment ? '1' : '0' }}" title="Add comment">
-                                    <i class="fas fa-comment {{ $hasComment ? 'text-blue-600' : 'text-gray-400' }}"></i>
+                                    <i
+                                        class="fas fa-comment {{ $hasComment ? 'text-blue-600' : 'text-gray-400' }}"></i>
                                 </button>
                             </figcaption>
                         </figure>
@@ -96,26 +193,31 @@
                         <p class="col-span-full text-center text-gray-500">No Project.</p>
                     @endforelse
                 </div>
+
+                <!-- Footer info + pagination -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mt-6">
+                    <p class="text-sm text-gray-600">
+                        Showing
+                        <span class="font-semibold">
+                            {{ $projects->firstItem() ?? 0 }}–{{ $projects->lastItem() ?? 0 }}
+                        </span>
+                        of <span class="font-semibold">{{ $projects->total() }}</span> projects
+                    </p>
+                    <div>
+                        {{ $projects->onEachSide(1)->links() }}
+                    </div>
+                </div>
             </div>
             <!-- /GRID -->
         </div>
     </div>
-    <!-- SIGN IN button (sementara) -->
-    {{-- <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-6">
-        <div class="flex justify-center">
-            <a href="/login"
-                class="inline-flex items-center justify-center w-40 h-11 rounded-md bg-blue-600 text-white font-extrabold tracking-wide hover:bg-blue-700">
-                SIGN IN
-            </a>
-        </div>
-    </div> --}}
 
-    <!-- /WRAPPER -->
+    <!-- FOOTER -->
     <footer class="mt-10 py-8 text-center text-xs text-gray-500">
         © {{ date('Y') }} FADUKDW
     </footer>
 
-    <!-- Comment Modal -->
+    <!-- COMMENT MODAL -->
     <div id="commentModal" class="fixed inset-0 bg-black/40 z-50 hidden justify-center items-center">
         <div class="bg-white rounded-xl p-6 w-80 shadow-lg relative">
             <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
@@ -156,11 +258,12 @@
         </div>
     </div>
 
+    <!-- SCRIPTS -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            // ========== LIKE ==========
+            // LIKE BUTTON
             function toggleLike(url, btn, icon) {
                 fetch(url, {
                         method: 'POST',
@@ -198,16 +301,14 @@
                 });
             });
 
-            // ========== COMMENT MODAL ==========
+            // COMMENT MODAL
             const modal = document.getElementById('commentModal');
             const form = document.getElementById('commentForm');
             let activeProjectId = null;
             let activeCommentBtn = null;
 
-            // helpers
             function openCommentModal(projectId, existingComments) {
                 activeProjectId = projectId;
-                // reset & prefill
                 form.reset();
                 if (Array.isArray(existingComments)) {
                     const set = new Set(existingComments);
@@ -226,7 +327,6 @@
                 activeCommentBtn = null;
             };
 
-            // open modal on click
             document.querySelectorAll('.comment-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     activeCommentBtn = this;
@@ -239,19 +339,14 @@
                 });
             });
 
-            // submit comments
+            // Submit Comments
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
                 if (!activeProjectId) return;
 
                 const selected = [...form.querySelectorAll('input[name="comments[]"]:checked')].map(cb => cb
                     .value);
-
-                // Kalau kosong, konfirmasi penghapusan (opsional)
-                if (selected.length === 0) {
-                    const ok = confirm('Delete all comments?');
-                    if (!ok) return;
-                }
+                if (selected.length === 0 && !confirm('Delete all comments?')) return;
 
                 fetch(`/projects/${activeProjectId}/comments`, {
                         method: 'POST',
@@ -270,7 +365,6 @@
                         return r.json();
                     })
                     .then(data => {
-                        // Update ikon sesuai hasil
                         if (activeCommentBtn) {
                             const icon = activeCommentBtn.querySelector('.fa-comment');
                             if (data.has_comments) {
@@ -292,10 +386,8 @@
                         alert('Failed to save comments.');
                     });
             });
-
         });
     </script>
-
 
 </body>
 

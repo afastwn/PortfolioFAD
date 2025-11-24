@@ -6,10 +6,17 @@
     {{-- Header --}}
     <header class="flex justify-between items-center border-b border-gray-300 pb-3 mb-8">
         <h2 class="text-xl font-extrabold">Profile</h2>
-        <h1 class="text-2xl font-extrabold flex items-center gap-2">
-            Hello, {{ explode(' ', Auth::user()->name_asli)[0] ?? 'User' }}! 👋
-        </h1>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('mhs.profile.cv.pdf') }}"
+                class="px-4 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700">
+                Export PDF
+            </a>
+            <h1 class="text-2xl font-extrabold flex items-center gap-2">
+                Hello, {{ explode(' ', Auth::user()->name_asli)[0] ?? 'User' }}! 👋
+            </h1>
+        </div>
     </header>
+
 
     {{-- Grid 2 kolom: center, gap kecil, profil span 3 baris --}}
     <div class="px-4">
@@ -811,7 +818,7 @@
                 regSel.innerHTML = `<option value="">-- Select Regency --</option>`;
                 if (!pid) return;
                 const items = await fetch(`{{ route('loc.regencies') }}?province_id=${pid}`).then(r => r
-                .json());
+                    .json());
                 regSel.innerHTML += items.map(x => `<option value="${x.id}">${x.name}</option>`).join('');
             }
             async function loadCities(pid) {

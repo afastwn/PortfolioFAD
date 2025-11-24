@@ -22,12 +22,11 @@
             </div>
         </div>
 
-        {{-- Active Students (Doughnut) --}}
+        {{-- Student Body (angka saja, tanpa diagram) --}}
         <div class="bg-white rounded-3xl border border-gray-200 shadow p-4 sm:p-6 w-full max-w-xs mx-auto">
-            <h3 class="text-xs sm:text-sm font-extrabold tracking-wide mb-4">ACTIVE STUDENTS</h3>
-            <div class="flex flex-col items-center">
-                <canvas id="activeChart" width="180" height="180"></canvas>
-                <div id="activeLegend" class="mt-4 flex flex-wrap justify-center gap-3 text-center text-xs"></div>
+            <h3 class="text-xs sm:text-sm font-extrabold tracking-wide mb-4">STUDENT BODY</h3>
+            <div class="flex flex-col items-center justify-center py-4 min-h-[120px]">
+                <div id="activeLegend" class="flex flex-col items-center justify-center text-center text-xs"></div>
             </div>
         </div>
     </div>
@@ -285,49 +284,29 @@
             });
         })();
 
-        // Active Students (Doughnut)
+        // Student Body (angka saja, tanpa diagram)
         (function() {
-            const activeCtx = document.getElementById('activeChart').getContext('2d');
-            const activeLabels = @json($activeCohortLabels ?? []);
-            const activeCounts = @json($activeCohortCounts ?? []);
-            const activeColors = activeLabels.map((_, i) => basePalette[i % basePalette.length]);
+            const activeLabels = @json($activeCohortLabels ?? []); // misal: ['Student Body']
+            const activeCounts = @json($activeCohortCounts ?? []); // misal: [total]
 
-            new Chart(activeCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: activeLabels.length ? activeLabels : ['No Data'],
-                    datasets: [{
-                        data: activeCounts.length ? activeCounts : [1],
-                        backgroundColor: activeColors,
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    cutout: '75%',
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: ctx => {
-                                    const val = ctx.raw ?? 0;
-                                    return `${ctx.label}: ${val} ${val === 1 ? 'student' : 'students'}`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Legend dinamis
             const legendEl = document.getElementById('activeLegend');
-            legendEl.innerHTML = activeLabels.map((label, i) => `
-                <div class="flex flex-col items-center w-12">
-                    <div class="w-2 h-2 rounded-full" style="background:${activeColors[i]}"></div>
-                    <div class="mt-1 text-gray-600">${label}</div>
+
+            // Jika ada beberapa angka, dijumlahkan. Kalau cuma satu, ya totalnya itu.
+            const total = (activeCounts && activeCounts.length) ?
+                activeCounts.reduce((acc, v) => acc + (Number(v) || 0), 0) :
+                0;
+
+            const label = activeLabels[0] ?? 'Total Number of Product Design Students';
+
+            legendEl.innerHTML = `
+                <div class="flex flex-col items-center">
+                    <div class="font-extrabold text-gray-900 leading-none" style="font-size: 220px;">
+                        ${total}
+                    </div>
+                    <div class="mt-2 text-xl uppercase tracking-wide text-gray-500">${label}</div>
                 </div>
-            `).join('');
+            `;
+
         })();
     </script>
 @endsection

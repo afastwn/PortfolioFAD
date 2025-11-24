@@ -90,6 +90,8 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::post('/profile/activities',    [MhsProfileController::class, 'saveActivities'])->name('profile.activities');
         Route::post('/profile/skills',        [MhsProfileController::class, 'saveSkills'])->name('profile.skills');
         Route::post('/profile/school',        [MhsProfileController::class, 'saveSchool'])->name('profile.school');
+        Route::get('/profile/cv',             [MhsProfileController::class, 'cv'])->name('profile.cv');
+        Route::get('/profile/cv/pdf',         [MhsProfileController::class, 'exportPdf'])->name('profile.cv.pdf');
 
         // Route::view('/gallery', 'showGalery')->name('gallery');
     });

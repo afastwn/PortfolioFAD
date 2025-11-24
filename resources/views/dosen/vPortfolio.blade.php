@@ -10,38 +10,106 @@
         </h1>
     </header>
 
-    {{-- Show entries --}}
-    <div class="flex justify-end mb-6">
-        <label class="flex items-center gap-2 text-sm">
-            Show
-            <select class="border rounded px-2 py-1">
-                <option>10</option>
-                <option>20</option>
-                <option>30</option>
-            </select>
-            entries
-        </label>
-    </div>
+    {{-- FILTER: Category (kiri) + Show entries (kanan), keduanya di sisi kanan --}}
+    @php
+        $categoryOptions = [
+            'Home and Seating Furniture',
+            'Bedroom Furniture and Beds',
+            'Lamps and Luminaires',
+            'Lighting Systems',
+            'Household Appliances and Household Accessories',
+            'Kitchens and Kitchen Furniture',
+            'Kitchen Taps and Sinks',
+            'Kitchen Appliances and Kitchen Accessories',
+            'Cookware and Cooking Utensils',
+            'Tableware',
+            'Bathroom and Sanitary Equipment',
+            'Bathroom Taps and Shower Heads',
+            'Garden Furniture',
+            'Garden Appliances and Garden Equipment',
+            'Outdoor and Camping Equipment',
+            'Sports Equipment',
+            'Hobby and Leisure',
+            'Bicycles and Bicycle Accessories',
+            'Babies and Children',
+            'Personal Care, Wellness and Beauty',
+            'Fashion and Lifestyle Accessories',
+            'Luggage and Bags',
+            'Eyewear',
+            'Watches',
+            'Jewellery',
+            'Interior Architecture',
+            'Interior Design Elements',
+            'Urban Design',
+            'Materials and Surfaces',
+            'Office Furniture and Office Chairs',
+            'Office Supplies and Stationery',
+            'Tools',
+            'Heating and Air Conditioning Technology',
+            'Industrial Equipment, Machinery and Automation',
+            'Robotics',
+            'Medical Devices and Technology',
+            'Healthcare',
+            'Cars and Motorcycles',
+            'Motorhomes and Caravans',
+            'Watercraft',
+            'Trains and Planes',
+            'Commercial Vehicles',
+            'Vehicle Accessories',
+            'TV and Home Entertainment',
+            'Audio',
+            'Cameras and Camera Equipment',
+            'Drones and Action Cameras',
+            'Mobile Phones, Tablets and Wearables',
+            'Communication Technology',
+            'Computer and Information Technology',
+            'Gaming and Streaming',
+            'Packaging',
+        ];
 
-    {{-- Grid 3 kolom, total 15 kotak (5 baris)
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        @forelse ($projects as $project)
-            @php
-                $cover = $project->display_cover_url ?? asset('images/placeholder.png'); // sediakan placeholder.png di public/images
-            @endphp
-            <figure class="bg-white shadow-md p-4 relative w-full " style="box-shadow: 2px 2px 6px #b8b8b8;">
-                <img src="{{ $cover }}" alt="{{ $project->title }}" class="w-full aspect-square object-cover"
-                    loading="lazy" />
-                <figcaption class="flex justify-center items-center space-x-6 mt-3 text-lg">
-                    <i class="fas fa-heart text-red-600 cursor-pointer hover:scale-110 transition"></i>
-                    <i class="fas fa-thumbs-down text-orange-500 cursor-pointer hover:scale-110 transition"></i>
-                    <i class="fas fa-comment text-sky-500 cursor-pointer hover:scale-110 transition"></i>
-                </figcaption>
-            </figure>
-        @empty
-            <p class="col-span-full text-center text-gray-500">Belum ada proyek.</p>
-        @endforelse
-    </div> --}}
+        $currentCategory = request('category');
+        $currentPerPage = (int) ($perPage ?? request('per_page', 10));
+    @endphp
+
+    <div class="flex justify-end mb-6">
+        <form id="entriesForm" method="GET" action="{{ url()->current() }}"
+            class="flex flex-wrap items-center gap-4 text-sm justify-end">
+
+            {{-- KIRI: Category --}}
+            <div class="flex items-center gap-2">
+                <span>Category</span>
+                <select name="category" class="border rounded px-2 py-1 w-60" onchange="this.form.submit()">
+                    <option value="">All Categories</option>
+                    @foreach ($categoryOptions as $cat)
+                        <option value="{{ $cat }}" {{ $currentCategory === $cat ? 'selected' : '' }}>
+                            {{ $cat }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- KANAN: Show entries --}}
+            <div class="flex items-center gap-2">
+                <span>Show</span>
+                <select name="per_page" class="border rounded px-2 py-1" onchange="this.form.submit()">
+                    @foreach ([10, 25, 50, 100] as $n)
+                        <option value="{{ $n }}" {{ $currentPerPage === $n ? 'selected' : '' }}>
+                            {{ $n }}
+                        </option>
+                    @endforeach
+                </select>
+                <span>entries</span>
+            </div>
+
+            {{-- Pertahankan query lain (kalau nanti ada param lain) --}}
+            @foreach (request()->except(['per_page', 'page', 'category']) as $k => $v)
+                <input type="hidden" name="{{ $k }}" value="{{ $v }}">
+            @endforeach
+
+            {{-- Reset ke halaman 1 saat filter berubah --}}
+            <input type="hidden" name="page" value="1">
+        </form>
+    </div>
 
     {{-- Grid 3 kolom, dengan nama alias dan nama kategory --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -53,7 +121,7 @@
                 $commentsArr = is_array($interaction->comments ?? null) ? $interaction->comments : [];
                 $hasComment = count($commentsArr) > 0;
             @endphp
-            <figure class="bg-white shadow-md p-4 relative w-full " style="box-shadow: 2px 2px 6px #b8b8b8;">
+            <figure class="bg-white shadow-md p-4 relative w-full" style="box-shadow: 2px 2px 6px #b8b8b8;">
                 <img src="{{ $cover }}" alt="{{ $project->title }}" class="w-full aspect-square object-cover"
                     loading="lazy" />
                 <figcaption class="flex justify-center items-center space-x-6 mt-3 text-lg">
@@ -73,9 +141,25 @@
                 </figcaption>
             </figure>
         @empty
-            <p class="col-span-full text-center text-gray-500">Belum ada proyek.</p>
+            <p class="col-span-full text-center text-gray-500">No Project.</p>
         @endforelse
     </div>
+
+    {{-- Footer: info + pagination --}}
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mt-6">
+        <p class="text-sm text-gray-600">
+            Showing
+            <span class="font-semibold">
+                {{ $projects->firstItem() ?? 0 }}–{{ $projects->lastItem() ?? 0 }}
+            </span>
+            of <span class="font-semibold">{{ $projects->total() }}</span> projects
+        </p>
+        <div>
+            {{-- withQueryString di controller memastikan per_page tetap terbawa --}}
+            {{ $projects->onEachSide(1)->links() }}
+        </div>
+    </div>
+
     <!-- Comment Modal -->
     <div id="commentModal" class="fixed inset-0 bg-black/40 z-50 hidden justify-center items-center">
         <div class="bg-white rounded-xl p-6 w-80 shadow-lg relative">
@@ -115,149 +199,136 @@
             </form>
         </div>
     </div>
-
-
-    @push('scripts')
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-                // ========== LIKE ==========
-                function toggleLike(url, btn, icon) {
-                    fetch(url, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': token,
-                                'X-Requested-With': 'XMLHttpRequest',
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({}),
-                            credentials: 'same-origin',
-                        })
-                        .then(r => {
-                            if (!r.ok) throw new Error('Like failed: ' + r.status);
-                            return r.json();
-                        })
-                        .then(data => {
-                            const liked = !!data.liked;
-                            btn.setAttribute('aria-pressed', liked ? 'true' : 'false');
-                            btn.setAttribute('title', liked ? 'Unlike' : 'Like');
-                            icon.classList.toggle('text-red-600', liked);
-                            icon.classList.toggle('text-gray-400', !liked);
-                        })
-                        .catch(err => {
-                            console.error(err);
-                            alert('Gagal memproses like. Coba lagi.');
-                        });
-                }
-
-                document.querySelectorAll('.like-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const url = this.dataset.likeUrl;
-                        const icon = this.querySelector('.fa-heart');
-                        toggleLike(url, this, icon);
-                    });
-                });
-
-                // ========== COMMENT MODAL ==========
-                const modal = document.getElementById('commentModal');
-                const form = document.getElementById('commentForm');
-                let activeProjectId = null;
-                let activeCommentBtn = null;
-
-                // helpers
-                function openCommentModal(projectId, existingComments) {
-                    activeProjectId = projectId;
-                    // reset & prefill
-                    form.reset();
-                    if (Array.isArray(existingComments)) {
-                        const set = new Set(existingComments);
-                        form.querySelectorAll('input[name="comments[]"]').forEach(cb => {
-                            cb.checked = set.has(cb.value);
-                        });
-                    }
-                    modal.classList.remove('hidden');
-                    modal.classList.add('flex');
-                }
-                window.closeCommentModal = function() {
-                    modal.classList.add('hidden');
-                    modal.classList.remove('flex');
-                    form.reset();
-                    activeProjectId = null;
-                    activeCommentBtn = null;
-                };
-
-                // open modal on click
-                document.querySelectorAll('.comment-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        activeCommentBtn = this;
-                        const pid = this.dataset.projectId;
-                        let existing = [];
-                        try {
-                            existing = JSON.parse(this.dataset.existing || '[]');
-                        } catch (_) {}
-                        openCommentModal(pid, existing);
-                    });
-                });
-
-                // submit comments
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    if (!activeProjectId) return;
-
-                    const selected = [...form.querySelectorAll('input[name="comments[]"]:checked')].map(cb => cb
-                        .value);
-
-                    // Kalau kosong, konfirmasi penghapusan (opsional)
-                    if (selected.length === 0) {
-                        const ok = confirm('Delete all comments?');
-                        if (!ok) return;
-                    }
-
-                    fetch(`/projects/${activeProjectId}/comments`, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': token,
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                comments: selected
-                            }),
-                            credentials: 'same-origin',
-                        })
-                        .then(r => {
-                            if (!r.ok) throw new Error('Comment failed: ' + r.status);
-                            return r.json();
-                        })
-                        .then(data => {
-                            // Update ikon sesuai hasil
-                            if (activeCommentBtn) {
-                                const icon = activeCommentBtn.querySelector('.fa-comment');
-                                if (data.has_comments) {
-                                    icon.classList.remove('text-gray-400');
-                                    icon.classList.add('text-blue-600');
-                                    activeCommentBtn.dataset.commented = '1';
-                                    activeCommentBtn.dataset.existing = JSON.stringify(selected);
-                                } else {
-                                    icon.classList.remove('text-blue-600');
-                                    icon.classList.add('text-gray-400');
-                                    activeCommentBtn.dataset.commented = '0';
-                                    activeCommentBtn.dataset.existing = '[]';
-                                }
-                            }
-                            closeCommentModal();
-                        })
-                        .catch(err => {
-                            console.error(err);
-                            alert('Failed to save comments.');
-                        });
-                });
-
-            });
-        </script>
-    @endpush
-
-
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            // ========== LIKE ==========
+            function toggleLike(url, btn, icon) {
+                fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': token,
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({}),
+                        credentials: 'same-origin',
+                    })
+                    .then(r => {
+                        if (!r.ok) throw new Error('Like failed: ' + r.status);
+                        return r.json();
+                    })
+                    .then(data => {
+                        const liked = !!data.liked;
+                        btn.setAttribute('aria-pressed', liked ? 'true' : 'false');
+                        btn.setAttribute('title', liked ? 'Unlike' : 'Like');
+                        icon.classList.toggle('text-red-600', liked);
+                        icon.classList.toggle('text-gray-400', !liked);
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert('Gagal memproses like. Coba lagi.');
+                    });
+            }
+
+            document.querySelectorAll('.like-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const url = this.dataset.likeUrl;
+                    const icon = this.querySelector('.fa-heart');
+                    toggleLike(url, this, icon);
+                });
+            });
+
+            // ========== COMMENT MODAL ==========
+            const modal = document.getElementById('commentModal');
+            const form = document.getElementById('commentForm');
+            let activeProjectId = null;
+            let activeCommentBtn = null;
+
+            function openCommentModal(projectId, existingComments) {
+                activeProjectId = projectId;
+                form.reset();
+                if (Array.isArray(existingComments)) {
+                    const set = new Set(existingComments);
+                    form.querySelectorAll('input[name="comments[]"]').forEach(cb => {
+                        cb.checked = set.has(cb.value);
+                    });
+                }
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+            window.closeCommentModal = function() {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                form.reset();
+                activeProjectId = null;
+                activeCommentBtn = null;
+            };
+
+            document.querySelectorAll('.comment-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    activeCommentBtn = this;
+                    const pid = this.dataset.projectId;
+                    let existing = [];
+                    try {
+                        existing = JSON.parse(this.dataset.existing || '[]');
+                    } catch (_) {}
+                    openCommentModal(pid, existing);
+                });
+            });
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (!activeProjectId) return;
+
+                const selected = [...form.querySelectorAll('input[name="comments[]"]:checked')].map(cb => cb
+                    .value);
+
+                if (selected.length === 0 && !confirm('Delete all comments?')) return;
+
+                fetch(`/projects/${activeProjectId}/comments`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': token,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            comments: selected
+                        }),
+                        credentials: 'same-origin',
+                    })
+                    .then(r => {
+                        if (!r.ok) throw new Error('Comment failed: ' + r.status);
+                        return r.json();
+                    })
+                    .then(data => {
+                        if (activeCommentBtn) {
+                            const icon = activeCommentBtn.querySelector('.fa-comment');
+                            if (data.has_comments) {
+                                icon.classList.remove('text-gray-400');
+                                icon.classList.add('text-blue-600');
+                                activeCommentBtn.dataset.commented = '1';
+                                activeCommentBtn.dataset.existing = JSON.stringify(selected);
+                            } else {
+                                icon.classList.remove('text-blue-600');
+                                icon.classList.add('text-gray-400');
+                                activeCommentBtn.dataset.commented = '0';
+                                activeCommentBtn.dataset.existing = '[]';
+                            }
+                        }
+                        closeCommentModal();
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert('Failed to save comments.');
+                    });
+            });
+        });
+    </script>
+@endpush
